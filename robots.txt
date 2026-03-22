@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://openlov-com.vercel.app/sitemap.xml
