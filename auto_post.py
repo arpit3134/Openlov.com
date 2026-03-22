@@ -4,12 +4,12 @@ import json
 from datetime import datetime
 
 api_key = os.getenv("GEMINI_API_KEY")
-# FULL Model Path is required for the v1 stable API
-url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+# Try using the most specific model path
+url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
 
 prompt = {
     "contents": [{
-        "parts":[{"text": "Write a unique 300-word Hindi article about latest cricket news. Use <h2> and <p> tags for HTML formatting."}]
+        "parts":[{"text": "Write a 300-word Hindi article about Cricket news. Use HTML tags like <h2> and <p>."}]
     }]
 }
 
@@ -28,7 +28,7 @@ try:
             f.write(article_text)
         print(f"✅ BINGO! Article saved: {filename}")
     else:
-        print("❌ Error from Gemini API (Detailed):")
+        print("❌ Error from Gemini API:")
         print(json.dumps(data, indent=2))
 except Exception as e:
     print(f"❌ Python Error: {e}")
