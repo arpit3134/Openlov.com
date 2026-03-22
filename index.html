@@ -3,30 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Openlov - Live Score & Tech News</title>
+    <title>Openlov - AI Tech News & Live Updates</title>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; margin: 0; }
-        nav { background: #1e293b; padding: 15px; border-bottom: 2px solid #38bdf8; }
-        .score-box { background: #1e293b; border: 2px solid #fbbf24; padding: 20px; border-radius: 15px; margin: 20px auto; width: 90%; max-width: 400px; }
-        .content { padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .article-link { background: #334155; padding: 15px; margin: 10px; border-radius: 10px; text-decoration: none; color: #38bdf8; width: 80%; }
+        :root { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        nav { background: var(--card); padding: 1rem; text-align: center; border-bottom: 2px solid var(--primary); font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .score-box { background: linear-gradient(45deg, #1e293b, #334155); border: 1px solid #fbbf24; padding: 20px; border-radius: 15px; margin-bottom: 30px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        h2 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 30px; }
+        #articles-list { display: grid; gap: 15px; margin-top: 20px; }
+        .article-card { background: var(--card); padding: 15px; border-radius: 10px; text-decoration: none; color: white; display: block; transition: 0.3s; border: 1px solid #334155; }
+        .article-card:hover { transform: translateY(-3px); border-color: var(--primary); background: #2d3748; }
+        footer { text-align: center; padding: 40px; color: #64748b; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-    <nav><b>Openlov.com</b></nav>
-    <div class="score-box">
-        <h3 style="color:#fbbf24">🏏 LIVE SCORE</h3>
-        <p id="score">Fetching Live Update...</p>
+
+    <nav>Openlov.com</nav>
+
+    <div class="container">
+        <div class="score-box">
+            <h3 style="color:#fbbf24; margin-top:0;">🏏 LIVE MATCH UPDATE</h3>
+            <div id="score">Updating match status...</div>
+        </div>
+
+        <h2>Latest AI Generated News</h2>
+        <div id="articles-list">
+            <p id="loading">Scanning for new posts...</p>
+        </div>
     </div>
-    <h2>Latest Articles</h2>
-    <div id="articles-list" class="content">
-        <p>New articles will appear here automatically...</p>
-    </div>
+
+    <footer>© 2026 Openlov.com | Powered by Gemini AI</footer>
+
     <script>
-        async function getScore() {
-            const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY');
-            // Hum yahan client-side fetch handle karenge
+        // Function to automatically list articles from the 'articles' folder
+        async function loadArticles() {
+            const listElement = document.getElementById('articles-list');
+            const repoOwner = "arpit3134"; 
+            const repoName = "Openlov.com";
+            
+            try {
+                // GitHub API se articles folder ki files mangwana
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/articles`);
+                const files = await response.json();
+                
+                if (files.length > 0) {
+                    listElement.innerHTML = ""; // Loading text hatao
+                    // Files ko ulta karna (Latest first)
+                    files.reverse().forEach(file => {
+                        if (file.name.endsWith('.html')) {
+                            const card = document.createElement('a');
+                            card.className = 'article-card';
+                            card.href = file.path;
+                            // File name se sundar title banana (e.g. post-20240322.html -> Post 2024-03-22)
+                            const title = file.name.replace('post-', 'Article: ').replace('.html', '');
+                            card.innerHTML = `<strong>${title}</strong><br><small style="color:#38bdf8">Click to read full story →</small>`;
+                            listElement.appendChild(card);
+                        }
+                    });
+                } else {
+                    listElement.innerHTML = "<p>No articles posted yet. Robot is working...</p>";
+                }
+            } catch (error) {
+                listElement.innerHTML = "<p>Starting up... First article will appear soon!</p>";
+            }
         }
+
+        loadArticles();
     </script>
 </body>
 </html>
