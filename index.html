@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Openlov - Live Score & Tech News</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; margin: 0; }
+        nav { background: #1e293b; padding: 15px; border-bottom: 2px solid #38bdf8; }
+        .score-box { background: #1e293b; border: 2px solid #fbbf24; padding: 20px; border-radius: 15px; margin: 20px auto; width: 90%; max-width: 400px; }
+        .content { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .article-link { background: #334155; padding: 15px; margin: 10px; border-radius: 10px; text-decoration: none; color: #38bdf8; width: 80%; }
+    </style>
+</head>
+<body>
+    <nav><b>Openlov.com</b></nav>
+    <div class="score-box">
+        <h3 style="color:#fbbf24">🏏 LIVE SCORE</h3>
+        <p id="score">Fetching Live Update...</p>
+    </div>
+    <h2>Latest Articles</h2>
+    <div id="articles-list" class="content">
+        <p>New articles will appear here automatically...</p>
+    </div>
+    <script>
+        async function getScore() {
+            const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY');
+            // Hum yahan client-side fetch handle karenge
+        }
+    </script>
+</body>
+</html>
