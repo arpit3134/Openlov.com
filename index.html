@@ -1,81 +1,860 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenLov — Cricket News</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg:#f9f8f5; --ink:#1a1814; --accent:#e8420a; --sans:'DM Sans',sans-serif; --serif:'Playfair Display',serif; }
-        body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0; padding: 0; }
-        header { padding: 40px 20px; border-bottom: 1px solid #e0ddd6; text-align: center; }
-        .logo { font-family: var(--serif); font-size: 48px; font-weight: 900; text-decoration: none; color: var(--ink); letter-spacing: -2px; }
-        .nav-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-        .nav-links a { text-decoration: none; color: var(--ink); }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: #fff; border: 1px solid #e0ddd6; padding: 25px; transition: transform 0.3s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .tag { color: var(--accent); text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; display: block; }
-        .card-title { font-family: var(--serif); font-size: 24px; line-height: 1.2; margin-bottom: 15px; font-weight: 700; text-transform: capitalize; color: var(--ink); }
-        .card-meta { font-size: 12px; color: #7a7670; font-weight: 500; }
-        footer { text-align: center; padding: 60px 20px; border-top: 1px solid #e0ddd6; font-size: 12px; color: #7a7670; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal — The signal for what's next</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f9f8f5;--bg2:#f0ede6;--bg3:#e8e4dc;--ink:#1a1814;--ink2:#4a4640;--ink3:#9a9690;--accent:#e8420a;--accent2:#f5a623;--border:#e0ddd6;--card:#fff;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--ease:cubic-bezier(.22,1,.36,1);--sh:0 4px 24px rgba(0,0,0,.07);--sh2:0 16px 48px rgba(0,0,0,.12)}
+[data-theme=dark]{--bg:#0d0c0a;--bg2:#161512;--bg3:#1e1c18;--ink:#f0ede6;--ink2:#a0ada8;--ink3:#5a5650;--border:#262420;--card:#161512;--sh:0 4px 24px rgba(0,0,0,.3);--sh2:0 16px 48px rgba(0,0,0,.5)}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hidden;transition:background .4s,color .4s;cursor:none}
+.cur{position:fixed;z-index:9999;pointer-events:none;mix-blend-mode:difference;top:0;left:0}
+.cur-d{width:8px;height:8px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+.cur-r{width:36px;height:36px;border:1.5px solid rgba(255,255,255,.5);border-radius:50%;transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease)}
+body:has(a:hover) .cur-r,body:has(button:hover) .cur-r,body:has([onclick]:hover) .cur-r{width:52px;height:52px}
+#prog{position:fixed;top:0;left:0;z-index:500;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;box-shadow:0 0 8px var(--accent)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:.6}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;padding:0 clamp(1rem,5vw,3rem);display:flex;align-items:center;justify-content:space-between;background:rgba(249,248,245,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+[data-theme=dark] nav{background:rgba(13,12,10,.92)}
+nav.scrolled{box-shadow:var(--sh)}
+nav.hide{transform:translateY(-100%)}
+.nav-logo{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-.03em;display:flex;align-items:center;gap:.4rem;cursor:pointer}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:.2rem}
+.nbi{padding:6px 14px;border-radius:50px;border:none;background:none;font-family:var(--sans);font-size:.78rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.nbi:hover,.nbi.active{background:var(--bg2);color:var(--ink)}
+.drop-wrap{position:relative}
+.drop-btn{display:flex;align-items:center;gap:.3rem}
+.drop-menu{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--card);border:1.5px solid var(--border);border-radius:14px;box-shadow:var(--sh2);min-width:190px;z-index:300;overflow:hidden;display:none;animation:fadeUp .2s var(--ease)}
+.drop-menu.open{display:block}
+.drop-menu a{display:flex;align-items:center;gap:.7rem;padding:.65rem 1.1rem;font-size:.82rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border)}
+.drop-menu a:last-child{border:none}
+.drop-menu a:hover{background:var(--bg2);color:var(--ink)}
+.nav-right{display:flex;align-items:center;gap:.5rem}
+.nav-icon{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);transition:all .2s}
+.nav-icon:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px clamp(1rem,5vw,3rem) 3rem;text-align:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 40%,rgba(232,66,10,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 60%,rgba(245,166,35,.05) 0%,transparent 60%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.35;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 70%)}
+.hero-content{position:relative;z-index:1;max-width:700px}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:5px 14px;border-radius:50px;border:1px solid var(--border);background:var(--card);font-size:.72rem;color:var(--ink3);font-family:var(--mono);margin-bottom:1.8rem;animation:fadeUp .6s var(--ease) both;box-shadow:var(--sh)}
+.live-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulse 1.5s infinite}
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,8vw,5rem);font-weight:900;line-height:1.05;letter-spacing:-.04em;margin-bottom:1.2rem;animation:fadeUp .7s .1s var(--ease) both}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero p{font-size:clamp(1rem,2.5vw,1.15rem);color:var(--ink2);line-height:1.7;margin-bottom:2.2rem;font-weight:300;animation:fadeUp .7s .2s var(--ease) both}
+.search-wrap{position:relative;max-width:500px;margin:0 auto 2rem;animation:fadeUp .7s .3s var(--ease) both}
+.search-wrap input{width:100%;padding:14px 22px 14px 50px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);font-family:var(--sans);font-size:.95rem;color:var(--ink);outline:none;transition:all .2s;box-shadow:var(--sh)}
+.search-wrap input:focus{border-color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.1)}
+.search-wrap input::placeholder{color:var(--ink3)}
+.s-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--ink3);pointer-events:none}
+.s-clear{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--ink3);cursor:pointer;background:none;border:none;font-size:.9rem;opacity:0;transition:opacity .2s}
+.search-wrap:has(input:not(:placeholder-shown)) .s-clear{opacity:1}
+.s-drop{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border:1.5px solid var(--border);border-radius:16px;box-shadow:var(--sh2);overflow:hidden;display:none;z-index:50}
+.s-drop.open{display:block;animation:fadeUp .2s var(--ease)}
+.s-item{padding:.85rem 1.2rem;display:flex;gap:.8rem;align-items:center;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border)}
+.s-item:last-child{border:none}
+.s-item:hover{background:var(--bg2)}
+.s-ico{font-size:1.1rem;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:8px}
+.s-ttl{font-size:.83rem;color:var(--ink);font-weight:500}
+.s-cat{font-size:.68rem;color:var(--ink3);font-family:var(--mono)}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;animation:fadeUp .7s .4s var(--ease) both}
+.stat-num{font-family:var(--serif);font-size:1.6rem;font-weight:700;line-height:1}
+.stat-lbl{font-size:.68rem;color:var(--ink3);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.scroll-cta{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.68rem;color:var(--ink3);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;animation:fadeUp .7s .6s var(--ease) both}
+.s-arr{width:28px;height:28px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:bounce 2s infinite}
+/* TICKER */
+.ticker-wrap{background:var(--ink);padding:.6rem 0;overflow:hidden}
+.ticker-inner{display:flex;gap:3rem;animation:ticker 30s linear infinite;white-space:nowrap;width:max-content}
+.ticker-wrap:hover .ticker-inner{animation-play-state:paused}
+.t-item{font-size:.7rem;font-family:var(--mono);opacity:.8;display:flex;align-items:center;gap:.6rem}
+.t-tag{padding:1px 7px;border-radius:50px;font-size:.6rem;font-weight:600}
+.t-hot{background:rgba(232,66,10,.3);color:#ff9070}
+.t-new{background:rgba(45,106,79,.3);color:#6ddfa0}
+.t-trend{background:rgba(245,166,35,.3);color:#ffd070}
+/* LAYOUT */
+.wrap{padding:0 clamp(1rem,5vw,3rem) 4rem;max-width:1240px;margin:0 auto}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem}
+.sec-title{font-family:var(--serif);font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.sec-link{font-size:.78rem;color:var(--accent);text-decoration:none;font-weight:500;transition:opacity .2s}
+.sec-link:hover{opacity:.7}
+.sec-label{font-family:var(--mono);font-size:.7rem;color:var(--ink3);letter-spacing:.12em;text-transform:uppercase}
+/* FILTERS */
+.cf-row{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:2rem}
+.cf-row::-webkit-scrollbar{display:none}
+.cf{flex-shrink:0;padding:7px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);font-family:var(--sans);font-size:.78rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.cf:hover{border-color:var(--ink2);color:var(--ink)}
+.cf.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+/* FEATURED */
+.feat-grid{display:grid;grid-template-columns:1.7fr 1fr;grid-template-rows:1fr 1fr;gap:1rem;min-height:460px}
+.feat-card{border-radius:16px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;position:relative;transition:transform .3s var(--ease),box-shadow .3s var(--ease);overflow:hidden}
+.feat-card:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
+.feat-main{grid-row:1/3;display:flex;flex-direction:column;justify-content:flex-end;padding:2.5rem;background:linear-gradient(135deg,#fffcf7,#fdf0dc);min-height:460px}
+[data-theme=dark] .feat-main{background:linear-gradient(135deg,#1a1814,#221e16)}
+.feat-bg-num{position:absolute;top:1rem;right:1.5rem;font-family:var(--serif);font-size:9rem;font-weight:900;color:var(--accent2);opacity:.1;line-height:1;user-select:none;transition:opacity .3s}
+.feat-card:hover .feat-bg-num{opacity:.2}
+.feat-side{padding:1.6rem;display:flex;flex-direction:column;justify-content:space-between}
+.feat-side:nth-child(3){border-top:1.5px solid var(--border)}
+/* TAGS */
+.tag{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:50px;font-size:.67rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.8rem}
+.tag-ai{background:#fde8e8;color:#b02020}.tag-tech{background:#e8f2fd;color:#1a52a0}.tag-finance{background:#e8fde8;color:#1d7a3a}
+.tag-health{background:#e8fdf5;color:#1d7a6a}.tag-sports{background:#fdf5e8;color:#8b5e1d}.tag-farming{background:#edfde8;color:#3a7a1d}
+.tag-business{background:#fde8f0;color:#8b1d3a}.tag-trends{background:#fdeee8;color:#8b3a1d}.tag-travel{background:#e8f0fd;color:#1d3a8b}
+.tag-design{background:#fde8f5;color:#8b1d7a}.tag-science{background:#e8eafd;color:#3a1d8b}.tag-culture{background:#f5e8fd;color:#6a1d8b}
+[data-theme=dark] .tag-ai{background:#3a1d1d;color:#f5a0a0}[data-theme=dark] .tag-tech{background:#1d2e4a;color:#90c0f5}
+[data-theme=dark] .tag-finance{background:#1d3a1d;color:#80e080}[data-theme=dark] .tag-health{background:#1d3a30;color:#80f5c0}
+[data-theme=dark] .tag-sports{background:#3a2e1d;color:#f5c480}[data-theme=dark] .tag-farming{background:#2a3a1d;color:#c0f080}
+[data-theme=dark] .tag-business{background:#3a1d2a;color:#f080c0}[data-theme=dark] .tag-trends{background:#3a2a1d;color:#f0c080}
+[data-theme=dark] .tag-travel{background:#1d2a3a;color:#80c0f5}
+.card-title{font-family:var(--serif);font-weight:700;line-height:1.22;letter-spacing:-.02em;color:var(--ink);margin-bottom:.6rem;transition:color .2s}
+.feat-card:hover .card-title{color:var(--accent)}
+.feat-main .card-title{font-size:clamp(1.4rem,2.5vw,1.9rem)}.feat-side .card-title{font-size:1rem}
+.card-desc{font-size:.88rem;color:var(--ink2);line-height:1.65;margin-bottom:1rem;font-weight:300}
+.card-meta{display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--ink3);font-family:var(--mono)}
+.dot{width:3px;height:3px;border-radius:50%;background:currentColor}
+.read-time{margin-left:auto;padding:2px 8px;border-radius:50px;border:1px solid var(--border);font-size:.67rem;transition:all .2s}
+.feat-card:hover .read-time{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* ARTICLE LIST */
+.a-card{display:grid;grid-template-columns:1fr 90px;gap:1.5rem;align-items:start;padding:1.6rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s;position:relative}
+.a-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transition:transform .25s var(--ease);transform-origin:top}
+.a-card:hover::before{transform:scaleY(1)}
+.a-card:hover{padding-left:.8rem}
+.a-card:last-child{border:none}
+.a-num{font-family:var(--mono);font-size:.6rem;color:var(--ink3);margin-bottom:.4rem}
+.a-img{width:90px;height:64px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;transition:transform .3s var(--ease)}
+.a-card:hover .a-img{transform:scale(1.05)}
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:2.5rem}
+.sidebar{display:flex;flex-direction:column;gap:1.5rem}
+.sw{border:1.5px solid var(--border);border-radius:14px;overflow:hidden}
+.sw-h{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between}
+.sw-t{font-family:var(--mono);font-size:.67rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.sw-b{padding:1.1rem}
+.tr-item{display:flex;align-items:baseline;gap:.7rem;padding:.7rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:padding-left .2s}
+.tr-item:hover{padding-left:.4rem}
+.tr-item:last-child{border:none;padding-bottom:0}
+.tr-num{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--border);min-width:22px;line-height:1;transition:color .2s}
+.tr-item:hover .tr-num{color:var(--accent)}
+.tr-txt{font-size:.82rem;font-weight:500;color:var(--ink);line-height:1.35}
+.qt-g{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.qt{padding:.9rem;border-radius:10px;background:var(--bg2);cursor:pointer;transition:all .2s;border:1px solid transparent}
+.qt:hover{background:var(--card);border-color:var(--border);transform:translateY(-2px);box-shadow:var(--sh)}
+.qt-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.4rem}
+.qt-n{font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:1px}
+.qt-d{font-size:.64rem;color:var(--ink3)}
+/* NEWSLETTER */
+.nl-wrap{padding:0 clamp(1rem,5vw,3rem) 3.5rem;max-width:1240px;margin:0 auto}
+.nl-box{background:var(--ink);border-radius:20px;padding:2rem clamp(1.5rem,4vw,3rem);display:flex;align-items:center;gap:2rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.nl-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 40% 100% at 0% 50%,rgba(232,66,10,.18) 0%,transparent 60%),radial-gradient(ellipse 30% 80% at 100% 50%,rgba(245,166,35,.1) 0%,transparent 60%);pointer-events:none}
+.nl-left{flex:1;min-width:180px;position:relative;z-index:1}
+.nl-left h2{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.5rem);font-weight:700;color:#f0ede6;margin-bottom:.25rem;letter-spacing:-.02em}
+.nl-left p{color:#6a6660;font-size:.8rem;font-weight:300}
+.nl-right{flex:1;min-width:240px;position:relative;z-index:1}
+.nl-form{display:flex;gap:.4rem}
+.nl-form input{flex:1;padding:10px 16px;border-radius:50px;border:1px solid #2a2926;background:#161512;color:#f0ede6;font-family:var(--sans);font-size:.85rem;outline:none;transition:border-color .2s}
+.nl-form input:focus{border-color:#4a4640}
+.nl-form input::placeholder{color:#3a3630}
+.btn-sub{padding:10px 20px;border-radius:50px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:var(--sans);font-size:.8rem;font-weight:600;white-space:nowrap;transition:all .2s}
+.btn-sub:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,66,10,.4)}
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem clamp(1rem,5vw,3rem) 0}
+.ft-in{max-width:1240px;margin:0 auto}
+.ft-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:2.5rem}
+.ft-logo{font-family:var(--serif);font-size:1.4rem;font-weight:700;color:var(--ink);display:block;margin-bottom:.6rem}
+.ft-p{font-size:.78rem;color:var(--ink3);line-height:1.6;max-width:220px;margin-bottom:1.1rem}
+.socials{display:flex;gap:.5rem}
+.soc{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);transition:all .2s}
+.soc:hover{background:var(--ink);color:var(--bg);border-color:var(--ink);transform:translateY(-2px)}
+.ft-col h4{font-size:.68rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.9rem}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.ft-col ul a{font-size:.8rem;color:var(--ink2);cursor:pointer;transition:color .2s;text-decoration:none;display:block}
+.ft-col ul a:hover{color:var(--ink)}
+.ft-bot{border-top:1px solid var(--border);padding:1.2rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
+.ft-copy{font-size:.7rem;color:var(--ink3);font-family:var(--mono)}
+.ft-leg{display:flex;gap:1.2rem}
+.ft-leg a{font-size:.7rem;color:var(--ink3);cursor:pointer;text-decoration:none;transition:color .2s}
+.ft-leg a:hover{color:var(--ink)}
+/* TOOLS PAGE */
+.tp{padding:100px clamp(1rem,5vw,3rem) 4rem;max-width:1240px;margin:0 auto}
+.tp-hero{text-align:center;margin-bottom:2.5rem}
+.tp-hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-.03em;margin-bottom:.5rem}
+.tp-hero p{color:var(--ink2);font-size:.95rem;font-weight:300}
+.tc-sec{margin-bottom:3rem}
+.tc-h{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:2px solid var(--border)}
+.tc-em{font-size:1.4rem}.tc-nm{font-family:var(--serif);font-size:1.2rem;font-weight:700}
+.tc-ct{font-family:var(--mono);font-size:.65rem;color:var(--ink3);background:var(--bg2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)}
+.t-items{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.t-item{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:1.3rem;transition:all .25s var(--ease);cursor:pointer;display:flex;flex-direction:column;gap:.6rem;position:relative;overflow:hidden}
+.t-item::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transition:transform .3s var(--ease);transform-origin:left}
+.t-item:hover::before{transform:scaleX(1)}
+.t-item:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
+.ti-top{display:flex;align-items:center;gap:.7rem}
+.ti-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ti-nm{font-size:.88rem;font-weight:600;color:var(--ink)}
+.ti-b{font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:50px;margin-left:auto}
+.ti-b.free{background:#e8fde8;color:#1d7a3a}
+.ti-b.pro{background:var(--bg2);color:var(--ink3)}
+[data-theme=dark] .ti-b.free{background:#1d3a1d;color:#80e0a0}
+.ti-d{font-size:.76rem;color:var(--ink2);line-height:1.5}
+.ti-v{display:inline-flex;align-items:center;gap:.3rem;margin-top:.2rem;align-self:flex-start;padding:6px 14px;border-radius:50px;background:var(--ink);color:var(--bg);border:none;font-size:.7rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity .2s}
+.ti-v:hover{opacity:.75}
+/* MODAL */
+.modal-ov{position:fixed;inset:0;z-index:500;background:rgba(10,9,8,.75);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .35s var(--ease)}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border-radius:24px;width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;position:relative;transform:translateY(40px) scale(.96);transition:transform .4s var(--ease);box-shadow:0 32px 80px rgba(0,0,0,.25);border:1px solid var(--border);overflow:hidden}
+.modal-ov.open .modal{transform:translateY(0) scale(1)}
+.m-pb{position:absolute;top:0;left:0;right:0;height:3px;z-index:10;background:var(--border)}
+.m-pf{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .1s linear;border-radius:0 2px 2px 0}
+.m-nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0}
+.m-nl{display:flex;align-items:center;gap:.4rem}
+.m-nlo{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--ink)}
+.m-ns{color:var(--border);font-size:.8rem}
+.m-nc{font-size:.7rem;color:var(--ink3);font-family:var(--mono)}
+.m-cls{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:all .2s;font-size:.85rem}
+.m-cls:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.m-sc{overflow-y:auto;flex:1}
+.m-sc::-webkit-scrollbar{width:4px}
+.m-sc::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.m-ban{background:linear-gradient(135deg,#fffcf7,#fdf0dc);padding:2.5rem 2.5rem 2rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+[data-theme=dark] .m-ban{background:linear-gradient(135deg,#1a1814,#221e16)}
+.m-ban-n{position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-family:var(--serif);font-size:7rem;font-weight:900;color:var(--accent2);opacity:.1;line-height:1;user-select:none}
+.m-ban-c{position:relative;z-index:1}
+.m-ttl{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2rem);font-weight:900;line-height:1.15;letter-spacing:-.03em;color:var(--ink);margin-bottom:1rem}
+.m-dsc{font-size:.93rem;color:var(--ink2);line-height:1.65;font-weight:300;margin-bottom:1.4rem}
+.m-mr{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.m-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0}
+.m-au{font-size:.82rem;font-weight:600;color:var(--ink)}
+.m-dt{font-size:.7rem;color:var(--ink3);font-family:var(--mono)}
+.m-cps{display:flex;gap:.4rem;margin-left:auto;flex-wrap:wrap}
+.m-cp{display:flex;align-items:center;gap:.3rem;padding:3px 10px;border-radius:50px;border:1px solid var(--border);background:var(--card);font-size:.67rem;color:var(--ink3);font-family:var(--mono)}
+.m-art{padding:2rem 2.5rem}
+.m-art p{color:var(--ink2);line-height:1.85;margin-bottom:1.4rem;font-size:.97rem;font-weight:300}
+.m-art p:first-child{font-size:1.05rem;font-weight:400;color:var(--ink)}
+.a-dv{display:flex;align-items:center;gap:1rem;margin:2rem 0;color:var(--ink3)}
+.a-dv::before,.a-dv::after{content:'';flex:1;height:1px;background:var(--border)}
+.a-dv span{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;white-space:nowrap}
+.pull-q{border-left:3px solid var(--accent);margin:1.8rem 0;padding:.8rem 1.5rem;background:var(--bg2);border-radius:0 10px 10px 0}
+.pull-q p{font-family:var(--serif);font-size:1.05rem!important;font-style:italic;color:var(--ink)!important;font-weight:400!important;margin:0!important;line-height:1.6!important}
+/* ENGAGE BAR */
+.eng-bar{display:flex;align-items:center;justify-content:space-around;padding:.9rem 1rem;border:1.5px solid var(--border);border-radius:16px;background:var(--bg2);margin:0 2rem 1.5rem}
+[data-theme=dark] .eng-bar{background:var(--bg3)}
+.e-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:10px;border:none;background:none;font-family:var(--sans);font-size:.7rem;color:var(--ink2);cursor:pointer;min-width:48px;transition:all .2s}
+.e-btn:hover{background:var(--card);color:var(--ink)}
+.e-btn.liked{color:#c02020}.e-btn.liked svg{fill:#c02020;stroke:#c02020}
+.e-btn.saved{color:#1d7a3a}.e-btn.saved svg{fill:#1d7a3a;stroke:#1d7a3a}
+.e-sep{width:1px;height:26px;background:var(--border)}
+/* SHARE */
+.sh-pan{margin:0 2rem 1.5rem;padding:1.2rem 1.4rem;border:1.5px solid var(--border);border-radius:14px;background:var(--card);display:none}
+.sh-pan.open{display:block;animation:fadeUp .2s var(--ease)}
+[data-theme=dark] .sh-pan{background:var(--bg2)}
+.sp-t{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.9rem}
+.sp-bs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem}
+.sp-b{display:flex;align-items:center;gap:.4rem;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);font-size:.76rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.sp-b:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+.sp-b.tw:hover{background:#1da1f2;color:#fff;border-color:#1da1f2}
+.sp-b.li:hover{background:#0077b5;color:#fff;border-color:#0077b5}
+.sp-b.wa:hover{background:#25d366;color:#fff;border-color:#25d366}
+.sp-b.cp:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sp-lr{display:flex;gap:.4rem}
+.sp-lr input{flex:1;padding:8px 13px;border-radius:50px;border:1.5px solid var(--border);background:var(--bg2);font-size:.75rem;color:var(--ink3);font-family:var(--mono);outline:none}
+.sp-lr button{padding:8px 14px;border-radius:50px;background:var(--ink);color:var(--bg);border:none;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--sans)}
+/* RELATED */
+.rel-s{padding:1.5rem 2.5rem 2rem}
+.rel-t{font-family:var(--serif);font-size:1.1rem;font-weight:700;margin-bottom:1.2rem}
+.rel-g{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.rel-c{padding:1rem;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s}
+.rel-c:hover{background:var(--card);transform:translateY(-2px);box-shadow:var(--sh)}
+.rc-em{font-size:1.3rem;margin-bottom:.4rem;display:block}
+.rc-t{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:.2rem}
+.rc-m{font-size:.66rem;color:var(--ink3);font-family:var(--mono)}
+/* COMMENTS */
+.cmt-s{padding:1.5rem 2.5rem;border-bottom:1px solid var(--border)}
+.cmt-t{font-family:var(--serif);font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.cmt-cn{font-family:var(--mono);font-size:.65rem;background:var(--bg2);padding:2px 8px;border-radius:50px;color:var(--ink3);border:1px solid var(--border)}
+.cmt-ir{display:flex;gap:.7rem;align-items:flex-start;margin-bottom:1.5rem}
+.cmt-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+.cmt-in{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);font-family:var(--sans);font-size:.83rem;color:var(--ink);resize:none;height:68px;outline:none;transition:border-color .2s,height .2s}
+.cmt-in:focus{border-color:var(--ink);height:100px}
+.cmt-in::placeholder{color:var(--ink3)}
+.cmt-sb{float:right;margin-top:.4rem;padding:6px 14px;border-radius:50px;background:var(--ink);color:var(--bg);border:none;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.cmt-li{display:flex;flex-direction:column;gap:1.2rem}
+.cmt-it{display:flex;gap:.7rem}
+.ca{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0}
+.cb-n{font-size:.78rem;font-weight:600;color:var(--ink)}
+.cb-ti{font-size:.66rem;color:var(--ink3);font-family:var(--mono);margin-left:.4rem}
+.cb-tx{font-size:.82rem;color:var(--ink2);line-height:1.6;margin-top:.2rem}
+.cb-ac{display:flex;gap:.8rem;margin-top:.3rem}
+.cb-a{font-size:.66rem;color:var(--ink3);cursor:pointer;background:none;border:none;font-family:var(--sans);transition:color .2s}
+.cb-a:hover{color:var(--accent)}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:600;background:var(--ink);color:var(--bg);padding:.75rem 1.3rem;border-radius:50px;font-size:.8rem;font-weight:500;box-shadow:var(--sh2);transform:translateY(80px);opacity:0;transition:all .35s var(--ease)}
+.toast.show{transform:translateY(0);opacity:1}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:900px){
+  .feat-grid{grid-template-columns:1fr;grid-template-rows:auto}.feat-main{grid-row:auto;min-height:280px}
+  .feat-side:nth-child(3){border-top:1.5px solid var(--border)}.two-col{grid-template-columns:1fr}.sidebar{display:none}
+  .t-items{grid-template-columns:1fr 1fr}.ft-top{grid-template-columns:1fr 1fr}.ft-brand{grid-column:1/-1}
+  .nl-box{flex-direction:column;gap:1.2rem}
+}
+@media(max-width:520px){
+  .t-items,.rel-g{grid-template-columns:1fr}.nl-form{flex-direction:column}.btn-sub{border-radius:12px}
+  .ft-top{grid-template-columns:1fr}.sp-bs{flex-direction:column}.hero-stats{gap:1.4rem}
+  .drop-menu{left:0;transform:none}
+}
+/* BUILT-IN CALCULATORS */
+.calc-box{background:var(--bg2);border-radius:16px;padding:1.5rem;margin-top:1.2rem;border:1.5px solid var(--border)}
+.calc-title{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem}
+.calc-field{display:flex;flex-direction:column;gap:.3rem}
+.calc-field.full{grid-column:1/-1}
+.calc-label{font-size:.7rem;font-family:var(--mono);color:var(--ink3);letter-spacing:.05em;text-transform:uppercase}
+.calc-input{padding:9px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-family:var(--sans);font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.calc-input:focus{border-color:var(--accent)}
+.calc-input[type=range]{padding:4px 0;accent-color:var(--accent);cursor:pointer}
+.calc-btn{width:100%;padding:11px;border-radius:50px;background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:1rem}
+.calc-btn:hover{opacity:.85;transform:translateY(-1px)}
+.calc-result{background:var(--ink);border-radius:14px;padding:1.2rem;display:none}
+.calc-result.show{display:block;animation:fadeUp .25s var(--ease)}
+.cr-row{display:flex;justify-content:space-between;align-items:baseline;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.cr-row:last-child{border:none;padding-top:.7rem}
+.cr-label{font-size:.72rem;color:#7a7670;font-family:var(--mono)}
+.cr-value{font-size:1rem;font-weight:700;color:#f0ede6;font-family:var(--serif)}
+.cr-value.big{font-size:1.4rem;color:var(--accent2)}
+.cr-value.green{color:#6ddfa0}
+.calc-range-val{font-size:.78rem;color:var(--accent);font-family:var(--mono);font-weight:600}
+</style>
 </head>
 <body>
+<div class="cur" id="c1"><div class="cur-d" id="cD"></div></div>
+<div class="cur" id="c2"><div class="cur-r" id="cR"></div></div>
+<div id="prog"></div>
 
-<header>
-    <a href="/" class="logo">OpenLov</a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/pages/privacy.html">Privacy</a>
-        <a href="/pages/contact.html">Contact</a>
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo" onclick="showPage('home')"><span class="logo-dot"></span>Signal</div>
+  <div class="nav-links">
+    <button class="nbi active" id="nbH" onclick="showPage('home')">Home</button>
+    <div class="drop-wrap">
+      <button class="nbi drop-btn" onclick="toggleDrop()">Blog <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="drop-menu" id="blogDrop">
+        <a onclick="gocat('finance')">📈 Finance</a><a onclick="gocat('tech')">💻 Tech</a><a onclick="gocat('ai')">🤖 AI</a>
+        <a onclick="gocat('sports')">⚽ Sports</a><a onclick="gocat('farming')">🌾 Farming</a><a onclick="gocat('health')">💚 Health</a>
+        <a onclick="gocat('business')">💼 Business</a><a onclick="gocat('trends')">🔥 Trends</a><a onclick="gocat('travel')">✈️ Travel</a>
+      </div>
     </div>
-</header>
+    <button class="nbi" id="nbT" onclick="showPage('tools')">🛠 Tools</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-icon" id="themeBtn"><svg id="thIco" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+    <div class="nav-icon" id="bmkBtn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+  </div>
+</nav>
 
-<div class="grid-container" id="posts-container">
-    <p style="text-align:center; grid-column: 1/-1;">Loading latest stories...</p>
+<!-- HOME -->
+<div id="homePage" class="page active">
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="live-dot"></span><span id="liveC">Live — 3,241 readers online</span></div>
+    <h1>The signal for<br><em>what's next</em></h1>
+    <p>Discover articles, ideas, tools, and insights<br>across every topic that matters.</p>
+    <div class="search-wrap">
+      <span class="s-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+      <input type="text" id="srchIn" placeholder="Search articles, topics, resources…" autocomplete="off">
+      <button class="s-clear" id="srchClr">✕</button>
+      <div class="s-drop" id="sDrop">
+        <div class="s-item" onclick="openArt(0)"><span class="s-ico">🧠</span><div><div class="s-ttl">LLMs Reshaping Intelligence</div><div class="s-cat">AI · 9 min</div></div></div>
+        <div class="s-item" onclick="openArt(2)"><span class="s-ico">💾</span><div><div class="s-ttl">Open Source Models Beating GPT-4</div><div class="s-cat">Tech · 5 min</div></div></div>
+        <div class="s-item" onclick="openArt(4)"><span class="s-ico">🌱</span><div><div class="s-ttl">Precision Agriculture Feeding Billions</div><div class="s-cat">Farming · 8 min</div></div></div>
+        <div class="s-item" onclick="openArt(5)"><span class="s-ico">❄️</span><div><div class="s-ttl">Cold Exposure and Mental Resilience</div><div class="s-cat">Health · 8 min</div></div></div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num" data-count="1240">0</div><div class="stat-lbl">Articles</div></div>
+      <div><div class="stat-num" data-count="84">0</div><div class="stat-lbl">Tools</div></div>
+      <div><div class="stat-num" data-count="52000">0</div><div class="stat-lbl">Subscribers</div></div>
+      <div><div class="stat-num" data-count="9">0</div><div class="stat-lbl">Categories</div></div>
+    </div>
+  </div>
+  <div class="scroll-cta" onclick="document.querySelector('.ticker-wrap').scrollIntoView({behavior:'smooth'})">
+    <span>Scroll to explore</span>
+    <div class="s-arr"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+  </div>
+</section>
+<div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
+<div class="wrap reveal" style="padding-top:3rem">
+  <div class="sec-head"><span class="sec-label">Featured Stories</span><a class="sec-link">View all →</a></div>
+  <div class="cf-row" id="cfRow">
+    <button class="cf active" data-f="all">All</button>
+    <button class="cf" data-f="finance">📈 Finance</button><button class="cf" data-f="tech">💻 Tech</button>
+    <button class="cf" data-f="ai">🤖 AI</button><button class="cf" data-f="sports">⚽ Sports</button>
+    <button class="cf" data-f="farming">🌾 Farming</button><button class="cf" data-f="health">💚 Health</button>
+    <button class="cf" data-f="business">💼 Business</button><button class="cf" data-f="trends">🔥 Trends</button>
+    <button class="cf" data-f="travel">✈️ Travel</button>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card feat-main" onclick="openArt(0)">
+      <span class="feat-bg-num">01</span>
+      <span class="tag tag-ai">🤖 AI</span>
+      <h2 class="card-title">Large Language Models Are Reshaping How We Think About Intelligence</h2>
+      <p class="card-desc">A deep exploration of how generative AI is challenging our assumptions about creativity and cognition.</p>
+      <div class="card-meta"><span>Sarah Chen</span><span class="dot"></span><span>Mar 19</span><span class="read-time">9 min</span></div>
+    </div>
+    <div class="feat-card feat-side" onclick="openArt(1)">
+      <div><span class="tag tag-finance">📈 Finance</span><h3 class="card-title">How Index Funds Are Quietly Owning the Market</h3><p class="card-desc" style="font-size:.8rem">The passive investing revolution and its strange consequences for capitalism.</p></div>
+      <div class="card-meta"><span>Priya Singh</span><span class="dot"></span><span>Mar 18</span><span class="read-time">6 min</span></div>
+    </div>
+    <div class="feat-card feat-side" onclick="openArt(4)">
+      <div><span class="tag tag-farming">🌾 Farming</span><h3 class="card-title">Precision Agriculture is Feeding a Billion More People</h3><p class="card-desc" style="font-size:.8rem">GPS tractors, drone monitoring, and AI crop models transforming food.</p></div>
+      <div class="card-meta"><span>Amara Osei</span><span class="dot"></span><span>Mar 15</span><span class="read-time">8 min</span></div>
+    </div>
+  </div>
+</div>
+<div class="wrap reveal" style="padding-top:2rem">
+  <div class="two-col">
+    <div>
+      <div class="sec-label" style="margin-bottom:1rem;display:flex;align-items:center;gap:.5rem">Latest <span style="flex:1;height:1px;background:var(--border)"></span></div>
+      <div id="artList"></div>
+    </div>
+    <aside class="sidebar">
+      <div class="sw"><div class="sw-h"><span class="sw-t">Trending Now</span><span style="font-size:.62rem;color:var(--accent);font-family:var(--mono)">↑ Live</span></div><div class="sw-b" id="trendList"></div></div>
+      <div class="sw"><div class="sw-h"><span class="sw-t">Quick Tools</span></div><div class="sw-b"><div class="qt-g">
+        <div class="qt" onclick="showPage('tools')"><div class="qt-ic" style="background:#fde8e8">🤖</div><div class="qt-n">AI Tools</div><div class="qt-d">Prompts, images</div></div>
+        <div class="qt" onclick="showPage('tools')"><div class="qt-ic" style="background:#e8f2fd">📊</div><div class="qt-n">Finance</div><div class="qt-d">Stocks, budgets</div></div>
+        <div class="qt" onclick="showPage('tools')"><div class="qt-ic" style="background:#e8fde8">💚</div><div class="qt-n">Health</div><div class="qt-d">BMI, calories</div></div>
+        <div class="qt" onclick="showPage('tools')"><div class="qt-ic" style="background:#edfde8">🌾</div><div class="qt-n">Farming</div><div class="qt-d">Crops, weather</div></div>
+      </div></div></div>
+      <div class="sw"><div class="sw-h"><span class="sw-t">Browse Topics</span></div><div class="sw-b" style="display:flex;flex-wrap:wrap;gap:.4rem">
+        <span class="tag tag-finance" style="cursor:pointer" onclick="gocat('finance')">📈 Finance</span>
+        <span class="tag tag-tech" style="cursor:pointer" onclick="gocat('tech')">💻 Tech</span>
+        <span class="tag tag-ai" style="cursor:pointer" onclick="gocat('ai')">🤖 AI</span>
+        <span class="tag tag-sports" style="cursor:pointer" onclick="gocat('sports')">⚽ Sports</span>
+        <span class="tag tag-farming" style="cursor:pointer" onclick="gocat('farming')">🌾 Farming</span>
+        <span class="tag tag-health" style="cursor:pointer" onclick="gocat('health')">💚 Health</span>
+        <span class="tag tag-business" style="cursor:pointer" onclick="gocat('business')">💼 Business</span>
+        <span class="tag tag-trends" style="cursor:pointer" onclick="gocat('trends')">🔥 Trends</span>
+        <span class="tag tag-travel" style="cursor:pointer" onclick="gocat('travel')">✈️ Travel</span>
+      </div></div>
+      <div class="sw"><div class="sw-h"><span class="sw-t">Your Reading</span></div><div class="sw-b"><div id="readSt" style="font-size:.78rem;color:var(--ink2)">Start reading to track progress.</div></div></div>
+    </aside>
+  </div>
+</div>
+<div class="nl-wrap reveal">
+  <div class="nl-box">
+    <div class="nl-left"><h2>Stay in the loop</h2><p>Weekly discoveries. No noise, just signal.</p></div>
+    <div class="nl-right"><div class="nl-form"><input type="email" id="nlEm" placeholder="your@email.com"><button class="btn-sub" onclick="subscribe()">Subscribe →</button></div></div>
+  </div>
+</div>
+</div><!-- end home -->
+
+<!-- TOOLS PAGE -->
+<div id="toolsPage" class="page">
+  <div class="tp">
+    <div class="tp-hero reveal"><h1>🛠 Tools Directory</h1><p>Curated tools by category — finance, health, AI, farming and more.</p></div>
+    <div class="cf-row reveal" id="tcfRow">
+      <button class="cf active" data-tf="all">All</button>
+      <button class="cf" data-tf="finance">📈 Finance</button><button class="cf" data-tf="health">💚 Health</button>
+      <button class="cf" data-tf="ai">🤖 AI</button><button class="cf" data-tf="tech">💻 Tech</button>
+      <button class="cf" data-tf="farming">🌾 Farming</button><button class="cf" data-tf="business">💼 Business</button>
+      <button class="cf" data-tf="travel">✈️ Travel</button>
+    </div>
+    <div id="toolsGrid"></div>
+  </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
-    © 2026 OPENLOV — THE SIGNAL FOR WHAT'S NEXT
+  <div class="ft-in">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <span class="ft-logo">Signal</span>
+        <p class="ft-p">Discover articles, ideas, and tools across every topic that matters. No noise, just signal.</p>
+        <div class="socials">
+          <div class="soc" onclick="showToast('Opening X…')" title="X/Twitter"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+          <div class="soc" onclick="showToast('Opening Instagram…')" title="Instagram"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+          <div class="soc" onclick="showToast('Opening LinkedIn…')" title="LinkedIn"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></div>
+          <div class="soc" onclick="showToast('Opening YouTube…')" title="YouTube"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg></div>
+          <div class="soc" onclick="showToast('Opening WhatsApp…')" title="WhatsApp"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg></div>
+        </div>
+      </div>
+      <div class="ft-col"><h4>Blog Categories</h4><ul>
+        <li><a onclick="gocat('finance')">📈 Finance</a></li><li><a onclick="gocat('tech')">💻 Tech</a></li>
+        <li><a onclick="gocat('ai')">🤖 AI</a></li><li><a onclick="gocat('sports')">⚽ Sports</a></li>
+        <li><a onclick="gocat('farming')">🌾 Farming</a></li><li><a onclick="gocat('health')">💚 Health</a></li>
+        <li><a onclick="gocat('business')">💼 Business</a></li><li><a onclick="gocat('trends')">🔥 Trends</a></li>
+        <li><a onclick="gocat('travel')">✈️ Travel</a></li>
+      </ul></div>
+      <div class="ft-col"><h4>Tools</h4><ul>
+        <li><a onclick="showPage('tools')">📈 Finance Tools</a></li><li><a onclick="showPage('tools')">💚 Health Tools</a></li>
+        <li><a onclick="showPage('tools')">🤖 AI Tools</a></li><li><a onclick="showPage('tools')">💻 Tech Tools</a></li>
+        <li><a onclick="showPage('tools')">🌾 Farming Tools</a></li><li><a onclick="showPage('tools')">💼 Business Tools</a></li>
+        <li><a onclick="showPage('tools')">✈️ Travel Tools</a></li>
+      </ul></div>
+      <div class="ft-col"><h4>Company</h4><ul>
+        <li><a onclick="showToast('About Us')">About Us</a></li><li><a onclick="showToast('Write for Us')">Write for Us</a></li>
+        <li><a onclick="showToast('Advertise')">Advertise</a></li><li><a onclick="showToast('Newsletter')">Newsletter</a></li>
+        <li><a onclick="showToast('Contact')">Contact</a></li><li><a onclick="showToast('Privacy Policy')">Privacy Policy</a></li>
+        <li><a onclick="showToast('Terms')">Terms of Use</a></li>
+      </ul></div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2025 Signal Media. All rights reserved.</span>
+      <div class="ft-leg"><a onclick="showToast('Privacy')">Privacy</a><a onclick="showToast('Terms')">Terms</a><a onclick="showToast('Cookies')">Cookies</a><a onclick="showToast('Sitemap')">Sitemap</a></div>
+    </div>
+  </div>
 </footer>
 
+<!-- MODAL -->
+<div class="modal-ov" id="modalOv" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="m-pb"><div class="m-pf" id="mPF"></div></div>
+    <div class="m-nav">
+      <div class="m-nl"><span class="m-nlo">Signal</span><span class="m-ns">›</span><span class="m-nc" id="mNC">Article</span></div>
+      <button class="m-cls" onclick="closeModal()">✕</button>
+    </div>
+    <div class="m-sc" id="mSC">
+      <div class="m-ban">
+        <div class="m-ban-n" id="mN">01</div>
+        <div class="m-ban-c">
+          <div id="mTag"></div>
+          <h2 class="m-ttl" id="mTtl"></h2>
+          <p class="m-dsc" id="mDsc"></p>
+          <div class="m-mr">
+            <div class="m-av" id="mAv"></div>
+            <div><div class="m-au" id="mAu"></div><div class="m-dt" id="mDt"></div></div>
+            <div class="m-cps">
+              <span class="m-cp"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="mRd"></span></span>
+              <span class="m-cp"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span id="mVw"></span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="m-art" id="mArt"></div>
+      <div class="rel-s"><div class="rel-t">Continue Reading</div><div class="rel-g" id="relG"></div></div>
+      <div class="eng-bar">
+        <button class="e-btn" id="eLk" onclick="toggleLike()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="eLkC">48</span>
+        </button>
+        <div class="e-sep"></div>
+        <button class="e-btn" id="eSv" onclick="toggleSave()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span id="eSvT">Save</span>
+        </button>
+        <div class="e-sep"></div>
+        <button class="e-btn" onclick="toggleShare()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>Share</span>
+        </button>
+        <div class="e-sep"></div>
+        <button class="e-btn" onclick="document.getElementById('cmtS').scrollIntoView({behavior:'smooth'})">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="eCmC">3</span>
+        </button>
+        <div class="e-sep"></div>
+        <button class="e-btn" onclick="copyLink()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>Copy</span>
+        </button>
+      </div>
+      <div class="sh-pan" id="shPan">
+        <div class="sp-t">Share this article</div>
+        <div class="sp-bs">
+          <button class="sp-b tw" onclick="doShare('twitter')"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> X/Twitter</button>
+          <button class="sp-b li" onclick="doShare('linkedin')"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg> LinkedIn</button>
+          <button class="sp-b wa" onclick="doShare('whatsapp')"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg> WhatsApp</button>
+          <button class="sp-b cp" onclick="copyLink()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
+        </div>
+        <div class="sp-lr"><input type="text" id="spLnk" readonly><button onclick="copyLink()">Copy</button></div>
+      </div>
+      <div class="cmt-s" id="cmtS">
+        <div class="cmt-t">Responses <span class="cmt-cn" id="cmtCN">3</span></div>
+        <div class="cmt-ir"><div class="cmt-av">Y</div><div style="flex:1"><textarea class="cmt-in" id="cmtIn" placeholder="Share your thoughts…"></textarea><button class="cmt-sb" onclick="submitCmt()">Publish</button></div></div>
+        <div class="cmt-li" id="cmtLi"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
-    async function loadPosts() {
-        try {
-            const res = await fetch('https://api.github.com/repos/arpit3134/Openlov.com/contents/articles');
-            const files = await res.json();
-            const container = document.getElementById('posts-container');
-            container.innerHTML = '';
-
-            // Filter only HTML files and reverse to show latest first
-            const htmlFiles = files.filter(f => f.name.endsWith('.html')).reverse();
-
-            if(htmlFiles.length === 0) {
-                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No articles found yet. Run your auto_post.py!</p>';
-                return;
-            }
-
-            htmlFiles.forEach(file => {
-                const rawTitle = file.name.replace('.html', '').split('-').slice(1).join(' ');
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => window.location.href = 'articles/' + file.name;
-                card.innerHTML = `
-                    <div>
-                        <span class="tag">Cricket News</span>
-                        <h2 class="card-title">${rawTitle}</h2>
-                    </div>
-                    <div class="card-meta">By AI Editor • Mar 2026</div>
-                `;
-                container.appendChild(card);
-            });
-        } catch(e) {
-            document.getElementById('posts-container').innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Failed to load articles. Check repository settings.</p>';
-        }
-    }
-    loadPosts();
+const ARTS=[
+  {id:0,cat:'ai',tag:'tag-ai',lbl:'🤖 AI',em:'🧠',title:'Large Language Models Are Reshaping How We Think About Intelligence',desc:'A deep exploration of how generative AI is challenging our assumptions about creativity and cognition.',author:'Sarah Chen',date:'Mar 19',read:'9 min',body:'Artificial intelligence has long promised to transform society, but with the emergence of large language models, that transformation feels less like a distant horizon and more like the present moment.\n\nWhat makes this moment genuinely interesting is not the capability itself, but what it reveals about the nature of intelligence. When a model trained on human text produces coherent reasoning, we are forced to ask: is this intelligence, or sophisticated pattern matching?\n\nResearchers at leading institutions have begun studying how humans calibrate their trust in AI-generated content. People tend to over-trust fluent and confident outputs, while under-trusting hedged language.\n\nMeanwhile, LLMs are changing how researchers approach problems — in fields from drug discovery to climate modeling, accelerating the hypothesis-generation phase.'},
+  {id:1,cat:'finance',tag:'tag-finance',lbl:'📈 Finance',em:'💰',title:'How Index Funds Are Quietly Owning the Entire Market',desc:'The passive investing revolution and its strange consequences for capitalism.',author:'Priya Singh',date:'Mar 18',read:'6 min',body:'Index funds have quietly become one of the most powerful forces in modern capitalism. By simply tracking market indices rather than attempting to beat them, they have accumulated trillions in assets.\n\nThe core argument is simple: most active fund managers fail to beat their benchmark index after fees over any 10-year period.\n\nVanguard, BlackRock, and State Street now control a combined $20+ trillion in assets. Their ownership stakes in virtually every major public company create novel questions about corporate governance.\n\nThe passive investing revolution has also democratized wealth building — millions of ordinary investors now hold diversified portfolios that would have required significant wealth to assemble decades ago.'},
+  {id:2,cat:'tech',tag:'tag-tech',lbl:'💻 Tech',em:'💾',title:'The Open Source Models Quietly Beating GPT-4',desc:'Llama, Mistral, and a dozen forks that are rewriting the AI landscape.',author:'Dev Patel',date:'Mar 17',read:'5 min',body:'For most of 2023, the conventional wisdom was that closed proprietary models would maintain a decisive lead over open-source counterparts.\n\nThat assumption is now being systematically dismantled. Meta\'s Llama series opened the floodgates to a community of researchers who began fine-tuning and distilling these models at a pace commercial labs struggled to match.\n\nMistral emerged as the most striking example: a small team released a 7B parameter model that outperformed systems three to four times its size.\n\nRunning inference locally means no data leaves the premises, costs become predictable, and latency drops to near zero — changing the calculus for regulated industries.'},
+  {id:3,cat:'sports',tag:'tag-sports',lbl:'⚽ Sports',em:'⚽',title:'How Data Analytics is Redefining Football Strategy',desc:'From xG to player tracking — how numbers are changing the beautiful game.',author:'Marco Silva',date:'Mar 16',read:'7 min',body:'Football has always been a game of intuition and skill, but a quiet revolution is underway in the analytics departments of top clubs.\n\nExpected Goals (xG) has moved from academic curiosity to standard broadcast metric in just a few years. Managers now receive real-time dashboards during matches.\n\nClubs like Brighton have shown that data-driven recruitment can compete with clubs spending five times their budget — identifying undervalued players invisible to traditional scouts.\n\nThe next frontier is real-time coaching interventions — using AI to suggest tactical adjustments mid-match based on patterns from thousands of historical games.'},
+  {id:4,cat:'farming',tag:'tag-farming',lbl:'🌾 Farming',em:'🌱',title:'How Precision Agriculture is Feeding a Billion More People',desc:'GPS tractors, drone monitoring, and AI crop models transforming food production.',author:'Amara Osei',date:'Mar 15',read:'8 min',body:'For millennia, farming was guided by instinct, tradition, and the reading of skies. That is now changing faster than any generation of farmers has experienced.\n\nPrecision agriculture uses GPS, sensors, and satellite imagery to treat each square meter of a field as unique. Fertilizer applied only where needed, water delivered at optimal timing, disease detected weeks before visible.\n\nIn India, AI crop advisory programs have shown yield improvements of 20-30% among smallholder farmers without any increase in input costs.\n\nThe challenges are real: digital infrastructure, training, and upfront costs remain barriers. But the farm of 2035 will look radically different from the farm of 2005.'},
+  {id:5,cat:'health',tag:'tag-health',lbl:'💚 Health',em:'❄️',title:'The Science of Cold Exposure and Mental Resilience',desc:'What 200+ studies say about ice baths, cortisol, and cognitive performance.',author:'James Okafor',date:'Mar 14',read:'8 min',body:'Cold exposure has migrated from the fringes of wellness culture into mainstream scientific inquiry, exploring effects on inflammation markers and mood regulation.\n\nThe physiological mechanisms are well understood. Cold exposure triggers a norepinephrine release two to three times baseline levels — a neurotransmitter key to attention, focus, and mood.\n\nSome researchers argue that deliberate cold discomfort builds a form of stress tolerance — a trained capacity to remain calm under physiological duress.\n\nThe hypothesis is that neural pathways engaged by cold stress overlap with those activated by other stressors, and repeated exposure calibrates the response downward over time.'},
+  {id:6,cat:'business',tag:'tag-business',lbl:'💼 Business',em:'📊',title:'Why Remote-First Companies Are Outperforming Office-Based Peers',desc:'New data on productivity, retention, and culture in distributed organizations.',author:'Zara Ahmed',date:'Mar 13',read:'6 min',body:'The debate over remote work has shifted from ideology to evidence. Remote-first companies are now outperforming office-centric counterparts on several key metrics.\n\nEmployee retention is the clearest signal. Companies with flexible or remote-first policies report turnover rates 25-40% lower than industry averages.\n\nProductivity is nuanced. Deep focus work — coding, writing, analysis — shows consistent gains in remote settings. Collaborative ideation and onboarding remain challenges.\n\nCompanies that have navigated this best invested in asynchronous communication infrastructure, clear documentation cultures, and deliberate in-person gatherings.'},
+  {id:7,cat:'trends',tag:'tag-trends',lbl:'🔥 Trends',em:'📱',title:'The 10 Digital Trends That Will Define 2025',desc:'From ambient AI to spatial computing — the forces reshaping our digital lives.',author:'Kai Tanaka',date:'Mar 12',read:'5 min',body:'Every year brings proclamations about the next big thing. Most predictions age badly. But occasionally, a cluster of trends arrives simultaneously that genuinely rewrites the landscape.\n\n2025 looks like one of those moments. Ambient AI — intelligence embedded invisibly in devices and environments — is moving from concept to product.\n\nSpatial computing, after years of false starts, is finding its first genuine consumer use cases. The backlash to algorithmic feeds is producing a new generation of intentional, curation-first platforms.\n\nPerhaps most significantly, the line between physical and digital retail has blurred to near-invisibility in markets from Seoul to São Paulo.'},
+  {id:8,cat:'travel',tag:'tag-travel',lbl:'✈️ Travel',em:'🗺️',title:"Slow Travel is the New Luxury — And It's More Affordable",desc:'How spending longer in fewer places is changing what travel means.',author:'Lucia Fernández',date:'Mar 11',read:'7 min',body:'The Instagram itinerary — seven cities in ten days — is losing its grip on how people think about travel.\n\nSlow travel is emerging as both a philosophy and a practice: spending weeks or months in a single destination, renting an apartment, shopping at local markets.\n\nThe economics are counterintuitive. Monthly apartment rentals in Lisbon, Medellín, or Chiang Mai often cost less than two nights at a mid-range hotel.\n\nRemote work has been the accelerant. When your office is wherever you have WiFi, the calculus of travel changes entirely — the destination becomes less a vacation and more a temporary relocation.'},
+];
+const TRENDS=['How Quantum Computing Will Break (and Save) the Internet',"Sleep Science: Why We Dream — Latest Research","India's Startup Ecosystem Hits $50B Valuation",'The 10 Most Influential Designers of the Decade','Carbon Capture Startups Racing to Scale in 2025'];
+const TKRD=[{t:'LLMs surpass human baseline on MMLU benchmark',tp:'t-hot'},{t:'Mistral releases 22B model under Apache 2.0',tp:'t-new'},{t:'Index funds now hold 54% of US equity market',tp:'t-trend'},{t:'CRISPR trial shows 94% efficacy in sickle cell',tp:'t-new'},{t:'Remote work boosts retention by 35%',tp:'t-hot'},{t:'Precision farming yields up 28% in India pilots',tp:'t-trend'},{t:'Slow travel searches up 180% on Google Flights',tp:'t-new'},{t:'Open source LLM downloads up 400% YoY',tp:'t-hot'}];
+const TDATA=[
+  {cat:'finance',em:'📈',nm:'Finance Tools',items:[
+    {ic:'📉',bg:'#f0e8fd',nm:'SIP Calculator',d:'Plan SIP investments — see projected returns month by month.',b:'free',url:'#',calc:'sip'},
+    {ic:'🧾',bg:'#fde8e8',nm:'EMI Calculator',d:'Calculate monthly EMI for home, car or personal loan.',b:'free',url:'#',calc:'emi'},
+    {ic:'🏦',bg:'#fdf5e8',nm:'Compound Interest',d:'See how your money grows with compound interest over time.',b:'free',url:'#',calc:'compound'},
+    {ic:'📊',bg:'#e8f2fd',nm:'GST Calculator',d:'Calculate GST amount and net/gross price instantly.',b:'free',url:'#',calc:'gst'},
+    {ic:'💰',bg:'#e8fde8',nm:'FD Calculator',d:'Calculate Fixed Deposit maturity amount and interest earned.',b:'free',url:'#',calc:'fd'},
+    {ic:'💹',bg:'#fde8f0',nm:'Stock Screener',d:'Filter stocks by fundamentals and technicals in real time.',b:'free',url:'https://finviz.com'},
+  ]},
+  {cat:'health',em:'💚',nm:'Health Tools',items:[
+    {ic:'🏃',bg:'#e8fdf5',nm:'BMI Calculator',d:'Calculate Body Mass Index — know if you are underweight, normal or obese.',b:'free',url:'#',calc:'bmi'},
+    {ic:'🎂',bg:'#fde8e8',nm:'Age Calculator',d:'Calculate your exact age in years, months and days from date of birth.',b:'free',url:'#',calc:'age'},
+    {ic:'❤️',bg:'#fdf5e8',nm:'Heart Rate Zones',d:'Find your target heart rate zones for fat burn and cardio.',b:'free',url:'#',calc:'heartrate'},
+    {ic:'💧',bg:'#e8f0fd',nm:'Water Intake Calc',d:'Calculate your daily water intake requirement based on weight.',b:'free',url:'#',calc:'water'},
+    {ic:'🥗',bg:'#e8fde8',nm:'Calorie Counter',d:'Track daily nutrition with a database of 1M+ foods.',b:'free',url:'https://cronometer.com'},
+    {ic:'💊',bg:'#f5e8fd',nm:'Symptom Checker',d:'AI-powered symptom analysis with condition probability.',b:'pro',url:'https://ada.com'},
+  ]},
+  {cat:'ai',em:'🤖',nm:'AI Tools',items:[
+    {ic:'✍️',bg:'#fde8e8',nm:'ChatGPT',d:'Conversational AI for writing, coding and creative work.',b:'free',url:'https://chat.openai.com'},
+    {ic:'🧠',bg:'#e8fde8',nm:'Claude AI',d:"Anthropic's AI for long-form reasoning and analysis.",b:'free',url:'https://claude.ai'},
+    {ic:'🎨',bg:'#fde8f5',nm:'Midjourney',d:'AI image generation with stunning artistic quality.',b:'pro',url:'https://midjourney.com'},
+    {ic:'🔊',bg:'#e8f2fd',nm:'ElevenLabs',d:'Clone or generate ultra-realistic voices for any text.',b:'free',url:'https://elevenlabs.io'},
+    {ic:'🎬',bg:'#fdf5e8',nm:'Runway ML',d:'AI video generation and editing for creators.',b:'pro',url:'https://runwayml.com'},
+    {ic:'📝',bg:'#f0e8fd',nm:'Notion AI',d:'AI-powered workspace for notes and project management.',b:'free',url:'https://notion.so'},
+  ]},
+  {cat:'tech',em:'💻',nm:'Tech Tools',items:[
+    {ic:'🔑',bg:'#fde8e8',nm:'Password Generator',d:'Generate strong, secure passwords with custom rules.',b:'free',url:'#',calc:'password'},
+    {ic:'📝',bg:'#e8f2fd',nm:'Word Counter',d:'Count words, characters, sentences and reading time instantly.',b:'free',url:'#',calc:'wordcount'},
+    {ic:'🌐',bg:'#e8fdf5',nm:'IP Lookup',d:'Find geolocation, ISP and info for any IP address.',b:'free',url:'#',calc:'ip'},
+    {ic:'🎨',bg:'#fdf5e8',nm:'Color Picker',d:'Pick colors, convert HEX ↔ RGB ↔ HSL values.',b:'free',url:'#',calc:'color'},
+    {ic:'🐙',bg:'#e8eafd',nm:'GitHub',d:"World's largest code hosting platform for version control.",b:'free',url:'https://github.com'},
+    {ic:'⚡',bg:'#f5e8fd',nm:'Vercel',d:'Deploy frontend apps instantly with global edge network.',b:'free',url:'https://vercel.com'},
+  ]},
+  {cat:'farming',em:'🌾',nm:'Farming Tools',items:[
+    {ic:'💧',bg:'#e8f2fd',nm:'Irrigation Calc',d:'Calculate water requirement per acre based on crop type and season.',b:'free',url:'#',calc:'irrigation'},
+    {ic:'🌱',bg:'#e8fde8',nm:'Seed Rate Calc',d:'Calculate seeds needed per acre for any crop variety.',b:'free',url:'#',calc:'seedrate'},
+    {ic:'🧪',bg:'#fdf5e8',nm:'Fertilizer Calc',d:'Get NPK fertilizer dosage recommendation by crop and area.',b:'free',url:'#',calc:'fertilizer'},
+    {ic:'📦',bg:'#fde8f0',nm:'Mandi Prices',d:'Live market prices for vegetables, grains and produce.',b:'free',url:'https://agmarknet.gov.in'},
+    {ic:'🌦',bg:'#e8fdf5',nm:'Agri Weather',d:'Hyperlocal 7-day forecasts and agricultural alerts for farmers.',b:'free',url:'https://weather.com'},
+    {ic:'🌍',bg:'#fde8e8',nm:'Soil Analyzer',d:'Soil health data and fertilizer recommendations by GPS location.',b:'pro',url:'#'},
+  ]},
+  {cat:'business',em:'💼',nm:'Business Tools',items:[
+    {ic:'💵',bg:'#e8fde8',nm:'Tip Calculator',d:'Split bills and calculate tips for any group size.',b:'free',url:'#',calc:'tip'},
+    {ic:'📈',bg:'#e8f2fd',nm:'Profit Margin Calc',d:'Calculate profit margin, markup and selling price.',b:'free',url:'#',calc:'profit'},
+    {ic:'📋',bg:'#e8eafd',nm:'Notion',d:'All-in-one workspace for project management and docs.',b:'free',url:'https://notion.so'},
+    {ic:'📣',bg:'#fde8e8',nm:'Mailchimp',d:'Email marketing with automation and segmentation.',b:'free',url:'https://mailchimp.com'},
+    {ic:'🤝',bg:'#fdf5e8',nm:'HubSpot CRM',d:'Free CRM for managing contacts, deals and sales pipeline.',b:'free',url:'https://hubspot.com'},
+    {ic:'💬',bg:'#f5e8fd',nm:'Slack',d:'Team messaging, file sharing and app integrations.',b:'free',url:'https://slack.com'},
+  ]},
+  {cat:'travel',em:'✈️',nm:'Travel Tools',items:[
+    {ic:'💱',bg:'#e8f2fd',nm:'Currency Converter',d:'Convert between 170+ currencies with live exchange rates.',b:'free',url:'#',calc:'currency'},
+    {ic:'⏰',bg:'#e8fdf5',nm:'Time Zone Converter',d:'Convert time between any two cities or time zones.',b:'free',url:'#',calc:'timezone'},
+    {ic:'🗺',bg:'#fde8f0',nm:'Google Maps',d:'Navigation, local discovery and real-time traffic worldwide.',b:'free',url:'https://maps.google.com'},
+    {ic:'✈️',bg:'#fdf5e8',nm:'Google Flights',d:'Track flight prices, set alerts and explore fare calendars.',b:'free',url:'https://flights.google.com'},
+    {ic:'🏨',bg:'#fde8e8',nm:'Booking.com',d:'Compare hotels, apartments and hostels globally.',b:'free',url:'https://booking.com'},
+    {ic:'🛂',bg:'#e8eafd',nm:'Visa Checker',d:'Check visa requirements for any country pair instantly.',b:'free',url:'https://visahq.com'},
+  ]},
+];
+// STATE
+let isDark=false,readCount=0,bookmarks=[];
+let liked=false,saved=false,likeCount=48,curId=null,xCmts=[];
+const CMTS=[{n:'Priya M.',t:'2h ago',tx:"Incredibly well-written. Something I've been trying to articulate for years.",bg:'#e8420a'},{n:'Tom K.',t:'5h ago',tx:'Bookmarked immediately. Would love a follow-up on professional applications.',bg:'#2d6a4f'},{n:'Aiko S.',t:'1d ago',tx:'The research links are gold. Thank you for citing actual studies.',bg:'#7b2d8b'}];
+// CURSOR
+const cD=document.getElementById('cD'),cR=document.getElementById('cR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cD.style.left=mx+'px';cD.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cR.style.left=rx+'px';cR.style.top=ry+'px';requestAnimationFrame(a)})();
+// SCROLL / NAV
+let lY=0;
+window.addEventListener('scroll',()=>{const n=document.getElementById('nav'),y=window.scrollY;n.classList.toggle('hide',y>lY&&y>200);n.classList.toggle('scrolled',y>40);lY=y;document.getElementById('prog').style.width=(y/(document.body.scrollHeight-window.innerHeight)*100)+'%';},{passive:true});
+// THEME
+document.getElementById('themeBtn').onclick=()=>{isDark=!isDark;document.body.setAttribute('data-theme',isDark?'dark':'');document.getElementById('thIco').innerHTML=isDark?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';showToast(isDark?'🌙 Dark mode':'☀️ Light mode')};
+// SEARCH
+const si=document.getElementById('srchIn'),sd=document.getElementById('sDrop');
+si.addEventListener('input',()=>sd.classList.toggle('open',si.value.length>0));
+si.addEventListener('blur',()=>setTimeout(()=>sd.classList.remove('open'),200));
+document.getElementById('srchClr').onclick=()=>{si.value='';sd.classList.remove('open');si.focus()};
+// TICKER
+(()=>{const t=document.getElementById('ticker');const all=[...TKRD,...TKRD];t.innerHTML=all.map(d=>`<div class="t-item"><span class="t-tag ${d.tp}">${d.tp==='t-hot'?'🔥 Hot':d.tp==='t-new'?'✦ New':'↑ Trend'}</span>${d.t}</div>`).join('')})();
+// COUNTER
+function animC(el,tg,dur=1800){const s=performance.now();const fmt=n=>n>=1000?Math.round(n/100)/10+'k':Math.round(n)+'';(function st(now){const p=Math.min((now-s)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=fmt(e*tg);if(p<1)requestAnimationFrame(st);else el.textContent=fmt(tg)})(s)}
+const ob=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-count]').forEach(el=>animC(el,+el.dataset.count));ob.disconnect()}})},{threshold:.3});
+ob.observe(document.querySelector('.hero-stats'));
+// REVEAL
+const rOb=new IntersectionObserver(en=>{en.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*60)})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>rOb.observe(el));
+// RENDER ARTICLES
+function renderArts(data){
+  document.getElementById('artList').innerHTML=data.map((a,i)=>`<div class="a-card reveal" onclick="openArt(${a.id})" style="transition-delay:${i*40}ms"><div><div class="a-num">0${i+1}</div><span class="tag ${a.tag}">${a.lbl}</span><h3 class="card-title" style="font-size:.97rem">${a.title}</h3><p class="card-desc">${a.desc}</p><div class="card-meta"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="read-time">${a.read}</span></div></div><div class="a-img">${a.em}</div></div>`).join('');
+  document.querySelectorAll('.a-card').forEach(el=>rOb.observe(el));
+}
+function renderTrends(){document.getElementById('trendList').innerHTML=TRENDS.map((t,i)=>`<div class="tr-item"><span class="tr-num">0${i+1}</span><span class="tr-txt">${t}</span></div>`).join('')}
+renderArts(ARTS); renderTrends();
+// CATEGORY FILTER
+document.querySelectorAll('#cfRow .cf').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('#cfRow .cf').forEach(x=>x.classList.remove('active'));b.classList.add('active');const f=b.dataset.f;const r=f==='all'?ARTS:ARTS.filter(a=>a.cat===f);renderArts(r.length?r:ARTS)})});
+// DROPDOWN
+function toggleDrop(){document.getElementById('blogDrop').classList.toggle('open')}
+function closeDrop(){document.getElementById('blogDrop').classList.remove('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.drop-wrap'))closeDrop()});
+function gocat(cat){showPage('home');closeDrop();setTimeout(()=>{document.querySelectorAll('#cfRow .cf').forEach(b=>b.classList.toggle('active',b.dataset.f===cat));const r=ARTS.filter(a=>a.cat===cat);renderArts(r.length?r:ARTS);document.getElementById('artList').scrollIntoView({behavior:'smooth',block:'start'});showToast('Showing '+cat+' articles')},300)}
+// PAGE SWITCH
+function showPage(p){document.getElementById('homePage').classList.toggle('active',p==='home');document.getElementById('toolsPage').classList.toggle('active',p==='tools');document.getElementById('nbH').classList.toggle('active',p==='home');document.getElementById('nbT').classList.toggle('active',p==='tools');if(p==='tools')renderTools();window.scrollTo({top:0,behavior:'smooth'});closeDrop()}
+// TOOLS RENDER
+let tCF='all';
+function renderTools(){
+  const cats=tCF==='all'?TDATA:TDATA.filter(c=>c.cat===tCF);
+  document.getElementById('toolsGrid').innerHTML=cats.map(cat=>`<div class="tc-sec reveal"><div class="tc-h"><span class="tc-em">${cat.em}</span><span class="tc-nm">${cat.nm}</span><span class="tc-ct">${cat.items.length} tools</span></div><div class="t-items">${cat.items.map((t,i)=>`<div class="t-item" onclick="openToolM('${cat.cat}',${i})"><div class="ti-top"><div class="ti-ic" style="background:${t.bg}">${t.ic}</div><span class="ti-nm">${t.nm}</span><span class="ti-b ${t.b}">${t.b==='free'?'Free':'Pro'}</span></div><div class="ti-d">${t.d}</div><button class="ti-v" onclick="event.stopPropagation();${t.url!=='#'?`window.open('${t.url}','_blank');showToast('Opening ${t.nm}…')`:`showToast('Coming soon!')`}">Visit Tool →</button></div>`).join('')}</div></div>`).join('');
+  document.querySelectorAll('#toolsGrid .reveal').forEach(el=>rOb.observe(el));
+}
+document.querySelectorAll('#tcfRow .cf').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('#tcfRow .cf').forEach(x=>x.classList.remove('active'));b.classList.add('active');tCF=b.dataset.tf;renderTools()})});
+// MODAL HELPERS
+function openMUI(){document.getElementById('modalOv').classList.add('open');document.body.style.overflow='hidden';document.getElementById('shPan').classList.remove('open');const sc=document.getElementById('mSC');sc.scrollTop=0;sc.onscroll=()=>{const p=(sc.scrollTop/(sc.scrollHeight-sc.clientHeight))*100;document.getElementById('mPF').style.width=p+'%'};readCount++;updateReadSt()}
+function closeModal(e){if(e&&e.target!==document.getElementById('modalOv'))return;document.getElementById('modalOv').classList.remove('open');document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+// OPEN ARTICLE
+function openArt(id){
+  const a=ARTS[id];if(!a)return;curId=id;liked=false;saved=false;likeCount=48+Math.floor(Math.random()*40);
+  document.getElementById('mNC').textContent=a.lbl;
+  document.getElementById('mN').textContent='0'+(id+1);
+  document.getElementById('mTag').innerHTML=`<span class="tag ${a.tag}" style="margin-bottom:1rem">${a.lbl}</span>`;
+  document.getElementById('mTtl').textContent=a.title;
+  document.getElementById('mDsc').textContent=a.desc;
+  const cols=['#e8420a','#2d6a4f','#7b2d8b','#1d3557','#f5a623','#1d7a6a','#8b5e1d','#1a52a0'];
+  const av=document.getElementById('mAv');av.style.background=`linear-gradient(135deg,${cols[id%cols.length]},${cols[(id+3)%cols.length]})`;av.textContent=a.author.charAt(0);
+  document.getElementById('mAu').textContent=a.author;document.getElementById('mDt').textContent=a.date+' · Signal';
+  document.getElementById('mRd').textContent=a.read;document.getElementById('mVw').textContent=(Math.floor(Math.random()*8)+1)+'.'+Math.floor(Math.random()*9)+'k views';
+  document.getElementById('spLnk').value='https://signal.app/a/'+a.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,45);
+  document.getElementById('eLkC').textContent=likeCount;updateLikeUI();updateSaveUI();
+  const paras=a.body.split('\n\n');const mid=Math.floor(paras.length/2);let html='';
+  paras.forEach((p,i)=>{html+=`<p>${p}</p>`;if(i===mid)html+=`<div class="pull-q"><p>"${p.split('.')[0]}."</p></div>`;if(i===1)html+=`<div class="a-dv"><span>· · ·</span></div>`});
+  document.getElementById('mArt').innerHTML=html;
+  document.getElementById('relG').innerHTML=ARTS.filter(x=>x.id!==id).slice(0,4).map(r=>`<div class="rel-c" onclick="openArt(${r.id})"><span class="rc-em">${r.em}</span><div class="rc-t">${r.title}</div><div class="rc-m">${r.author} · ${r.read}</div></div>`).join('');
+  xCmts=[];renderCmts();openMUI();
+}
+// OPEN TOOL MODAL
+function openToolM(catKey,idx){
+  const cat=TDATA.find(c=>c.cat===catKey);if(!cat)return;const t=cat.items[idx];if(!t)return;
+  curId=null;liked=false;saved=false;likeCount=Math.floor(Math.random()*80)+20;
+  document.getElementById('mNC').textContent=cat.nm;document.getElementById('mN').textContent=cat.em;
+  document.getElementById('mTag').innerHTML=`<span class="tag tag-${catKey}" style="margin-bottom:1rem">${cat.em} ${cat.nm}</span>`;
+  document.getElementById('mTtl').textContent=t.nm;document.getElementById('mDsc').textContent=t.d;
+  const av=document.getElementById('mAv');av.style.background='linear-gradient(135deg,#e8420a,#f5a623)';av.textContent=t.ic;
+  document.getElementById('mAu').textContent='Signal Tools';document.getElementById('mDt').textContent='Verified · 2025';
+  document.getElementById('mRd').textContent=t.b==='free'?'Free':'Pro';document.getElementById('mVw').textContent=Math.floor(Math.random()*15+2)+'k users';
+  document.getElementById('spLnk').value=t.url!=='#'?t.url:'https://signal.app/tools';
+  document.getElementById('eLkC').textContent=likeCount;updateLikeUI();updateSaveUI();
+  const cH=buildCalcHTML(t.calc);
+  const vB=t.url!=='#'?`<div style="margin-top:1.5rem"><a href="${t.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;padding:11px 22px;border-radius:50px;background:var(--accent);color:white;text-decoration:none;font-weight:600;font-size:.88rem">Visit ${t.nm} →</a></div>`:'';
+  document.getElementById('mArt').innerHTML=`<p>${t.d}</p>${cH}<div class="a-dv" style="margin-top:1.5rem"><span>· · ·</span></div><p><strong>Pricing:</strong> ${t.b==='free'?'Completely free — no login or credit card required.':'Pro subscription. Free trial available.'}</p>${vB}`;
+  const autos={sip:calcSIP,emi:calcEMI,compound:calcCI,gst:calcGST,fd:calcFD,bmi:calcBMI,age:calcAge,heartrate:calcHR,water:calcWater,tip:calcTip,profit:calcProfit,currency:calcCurrency,timezone:calcTZ,irrigation:calcIrrigation,seedrate:calcSeed,fertilizer:calcFert,password:genPass,ip:fetchIP,color:initColor};
+  setTimeout(()=>{if(t.calc&&autos[t.calc])autos[t.calc]();},120);
+  document.getElementById('relG').innerHTML=cat.items.filter((_,i)=>i!==idx).slice(0,4).map((r,ri)=>`<div class="rel-c" onclick="openToolM('${catKey}',${ri>=idx?ri+1:ri})"><span class="rc-em">${r.ic}</span><div class="rc-t">${r.nm}</div><div class="rc-m">${r.b==='free'?'Free':'Pro'} · ${cat.nm}</div></div>`).join('');
+  xCmts=[];renderCmts();openMUI();
+}
+function buildCalcHTML(calc){
+const C={
+sip:`<div class="calc-box"><div class="calc-title">📉 SIP Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Monthly Investment (₹)</label><input class="calc-input" type="number" id="sipAmt" value="5000" min="500" step="500" oninput="calcSIP()"></div><div class="calc-field"><label class="calc-label">Expected Return (%/yr)</label><input class="calc-input" type="number" id="sipRate" value="12" min="1" max="30" step="0.5" oninput="calcSIP()"></div><div class="calc-field full"><label class="calc-label" style="display:flex;justify-content:space-between">Period <span class="calc-range-val" id="sipYrLbl">10 Years</span></label><input class="calc-input" type="range" id="sipYrs" value="10" min="1" max="40" oninput="document.getElementById('sipYrLbl').textContent=this.value+' Years';calcSIP()"></div></div><button class="calc-btn" onclick="calcSIP()">Calculate Returns</button><div class="calc-result" id="sipResult"><div class="cr-row"><span class="cr-label">Total Invested</span><span class="cr-value" id="sipInvested">—</span></div><div class="cr-row"><span class="cr-label">Estimated Returns</span><span class="cr-value green" id="sipReturns">—</span></div><div class="cr-row"><span class="cr-label">Total Value</span><span class="cr-value big" id="sipTotal">—</span></div></div></div>`,
+emi:`<div class="calc-box"><div class="calc-title">🧾 EMI Calculator</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Loan Amount (₹)</label><input class="calc-input" type="number" id="emiAmt" value="500000" min="10000" step="10000" oninput="calcEMI()"></div><div class="calc-field"><label class="calc-label">Interest Rate (%/yr)</label><input class="calc-input" type="number" id="emiRate" value="8.5" min="1" max="30" step="0.1" oninput="calcEMI()"></div><div class="calc-field"><label class="calc-label" style="display:flex;justify-content:space-between">Tenure <span class="calc-range-val" id="emiYrLbl">5 Yrs</span></label><input class="calc-input" type="range" id="emiYrs" value="5" min="1" max="30" oninput="document.getElementById('emiYrLbl').textContent=this.value+' Yrs';calcEMI()"></div></div><button class="calc-btn" onclick="calcEMI()">Calculate EMI</button><div class="calc-result" id="emiResult"><div class="cr-row"><span class="cr-label">Monthly EMI</span><span class="cr-value big" id="emiMonthly">—</span></div><div class="cr-row"><span class="cr-label">Total Interest</span><span class="cr-value green" id="emiInterest">—</span></div><div class="cr-row"><span class="cr-label">Total Payment</span><span class="cr-value" id="emiTotal">—</span></div></div></div>`,
+compound:`<div class="calc-box"><div class="calc-title">🏦 Compound Interest</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Principal (₹)</label><input class="calc-input" type="number" id="ciPrincipal" value="100000" min="1000" step="1000" oninput="calcCI()"></div><div class="calc-field"><label class="calc-label">Annual Rate (%)</label><input class="calc-input" type="number" id="ciRate" value="10" min="1" max="50" step="0.5" oninput="calcCI()"></div><div class="calc-field"><label class="calc-label" style="display:flex;justify-content:space-between">Period <span class="calc-range-val" id="ciYrLbl">5 Years</span></label><input class="calc-input" type="range" id="ciYrs" value="5" min="1" max="40" oninput="document.getElementById('ciYrLbl').textContent=this.value+' Years';calcCI()"></div><div class="calc-field"><label class="calc-label">Compounding</label><select class="calc-input" id="ciFreq" onchange="calcCI()"><option value="1">Annually</option><option value="2">Half-Yearly</option><option value="4" selected>Quarterly</option><option value="12">Monthly</option></select></div></div><button class="calc-btn" onclick="calcCI()">Calculate Growth</button><div class="calc-result" id="ciResult"><div class="cr-row"><span class="cr-label">Principal</span><span class="cr-value" id="ciPrin">—</span></div><div class="cr-row"><span class="cr-label">Interest Earned</span><span class="cr-value green" id="ciEarned">—</span></div><div class="cr-row"><span class="cr-label">Maturity Value</span><span class="cr-value big" id="ciTotal">—</span></div></div></div>`,
+gst:`<div class="calc-box"><div class="calc-title">📊 GST Calculator</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Amount (₹)</label><input class="calc-input" type="number" id="gstAmt" value="1000" min="1" oninput="calcGST()"></div><div class="calc-field"><label class="calc-label">GST Rate</label><select class="calc-input" id="gstRate" onchange="calcGST()"><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div><div class="calc-field"><label class="calc-label">Type</label><select class="calc-input" id="gstType" onchange="calcGST()"><option value="excl">Exclusive (Add GST)</option><option value="incl">Inclusive (Remove GST)</option></select></div></div><button class="calc-btn" onclick="calcGST()">Calculate GST</button><div class="calc-result" id="gstResult"><div class="cr-row"><span class="cr-label">Base Amount</span><span class="cr-value" id="gstBase">—</span></div><div class="cr-row"><span class="cr-label">GST Amount</span><span class="cr-value green" id="gstAmount">—</span></div><div class="cr-row"><span class="cr-label">Total Amount</span><span class="cr-value big" id="gstTotal">—</span></div><div class="cr-row"><span class="cr-label">CGST / SGST (each)</span><span class="cr-value" id="gstSplit">—</span></div></div></div>`,
+fd:`<div class="calc-box"><div class="calc-title">💰 FD Calculator</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Principal (₹)</label><input class="calc-input" type="number" id="fdAmt" value="100000" min="1000" step="1000" oninput="calcFD()"></div><div class="calc-field"><label class="calc-label">Interest Rate (%/yr)</label><input class="calc-input" type="number" id="fdRate" value="7.5" min="1" max="20" step="0.1" oninput="calcFD()"></div><div class="calc-field"><label class="calc-label" style="display:flex;justify-content:space-between">Tenure <span class="calc-range-val" id="fdYrLbl">2 Years</span></label><input class="calc-input" type="range" id="fdYrs" value="2" min="1" max="10" oninput="document.getElementById('fdYrLbl').textContent=this.value+' Years';calcFD()"></div></div><button class="calc-btn" onclick="calcFD()">Calculate FD</button><div class="calc-result" id="fdResult"><div class="cr-row"><span class="cr-label">Principal</span><span class="cr-value" id="fdPrin">—</span></div><div class="cr-row"><span class="cr-label">Interest Earned</span><span class="cr-value green" id="fdInt">—</span></div><div class="cr-row"><span class="cr-label">Maturity Amount</span><span class="cr-value big" id="fdTotal">—</span></div></div></div>`,
+bmi:`<div class="calc-box"><div class="calc-title">🏃 BMI Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Weight (kg)</label><input class="calc-input" type="number" id="bmiWt" value="70" min="20" max="300" oninput="calcBMI()"></div><div class="calc-field"><label class="calc-label">Height (cm)</label><input class="calc-input" type="number" id="bmiHt" value="170" min="100" max="250" oninput="calcBMI()"></div><div class="calc-field"><label class="calc-label">Age</label><input class="calc-input" type="number" id="bmiAge" value="25" min="2" max="120" oninput="calcBMI()"></div><div class="calc-field"><label class="calc-label">Gender</label><select class="calc-input" id="bmiGen" onchange="calcBMI()"><option>Male</option><option>Female</option></select></div></div><button class="calc-btn" onclick="calcBMI()">Calculate BMI</button><div class="calc-result" id="bmiResult"><div class="cr-row"><span class="cr-label">Your BMI</span><span class="cr-value big" id="bmiVal">—</span></div><div class="cr-row"><span class="cr-label">Category</span><span class="cr-value" id="bmiCat">—</span></div><div class="cr-row"><span class="cr-label">Ideal Weight Range</span><span class="cr-value green" id="bmiIdeal">—</span></div></div></div>`,
+age:`<div class="calc-box"><div class="calc-title">🎂 Age Calculator</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Date of Birth</label><input class="calc-input" type="date" id="ageDOB" oninput="calcAge()"></div></div><button class="calc-btn" onclick="calcAge()">Calculate Age</button><div class="calc-result" id="ageResult"><div class="cr-row"><span class="cr-label">Age</span><span class="cr-value big" id="ageYrs">—</span></div><div class="cr-row"><span class="cr-label">In Months</span><span class="cr-value" id="ageMo">—</span></div><div class="cr-row"><span class="cr-label">In Days</span><span class="cr-value green" id="ageDy">—</span></div><div class="cr-row"><span class="cr-label">Next Birthday In</span><span class="cr-value" id="ageBd">—</span></div></div></div>`,
+heartrate:`<div class="calc-box"><div class="calc-title">❤️ Heart Rate Zones</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Your Age</label><input class="calc-input" type="number" id="hrAge" value="30" min="10" max="100" oninput="calcHR()"></div></div><button class="calc-btn" onclick="calcHR()">Calculate Zones</button><div class="calc-result" id="hrResult"><div class="cr-row"><span class="cr-label">Max Heart Rate</span><span class="cr-value big" id="hrMax">—</span></div><div class="cr-row"><span class="cr-label">🔥 Fat Burn (50–70%)</span><span class="cr-value green" id="hrFat">—</span></div><div class="cr-row"><span class="cr-label">💪 Cardio (70–85%)</span><span class="cr-value" id="hrCardio">—</span></div><div class="cr-row"><span class="cr-label">⚡ Peak (85–100%)</span><span class="cr-value" id="hrPeak">—</span></div></div></div>`,
+water:`<div class="calc-box"><div class="calc-title">💧 Water Intake Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Weight (kg)</label><input class="calc-input" type="number" id="h2oWt" value="70" min="20" max="200" oninput="calcWater()"></div><div class="calc-field"><label class="calc-label">Activity Level</label><select class="calc-input" id="h2oAct" onchange="calcWater()"><option value="1.2">Sedentary</option><option value="1.4" selected>Moderate</option><option value="1.6">Active</option><option value="1.8">Very Active</option></select></div></div><button class="calc-btn" onclick="calcWater()">Calculate</button><div class="calc-result" id="waterResult"><div class="cr-row"><span class="cr-label">Daily Water Needed</span><span class="cr-value big" id="waterLtr">—</span></div><div class="cr-row"><span class="cr-label">In Glasses (250ml)</span><span class="cr-value green" id="waterGlass">—</span></div></div></div>`,
+tip:`<div class="calc-box"><div class="calc-title">💵 Tip & Bill Splitter</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Bill Amount (₹)</label><input class="calc-input" type="number" id="tipBill" value="1000" min="1" oninput="calcTip()"></div><div class="calc-field"><label class="calc-label">Tip %</label><input class="calc-input" type="number" id="tipPct" value="10" min="0" max="100" oninput="calcTip()"></div><div class="calc-field"><label class="calc-label">Split Between</label><input class="calc-input" type="number" id="tipSplit" value="2" min="1" max="50" oninput="calcTip()"></div></div><button class="calc-btn" onclick="calcTip()">Split Bill</button><div class="calc-result" id="tipResult"><div class="cr-row"><span class="cr-label">Tip Amount</span><span class="cr-value" id="tipAmt">—</span></div><div class="cr-row"><span class="cr-label">Total with Tip</span><span class="cr-value" id="tipTotal">—</span></div><div class="cr-row"><span class="cr-label">Per Person</span><span class="cr-value big" id="tipPer">—</span></div></div></div>`,
+profit:`<div class="calc-box"><div class="calc-title">📈 Profit Margin Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Cost Price (₹)</label><input class="calc-input" type="number" id="prCost" value="500" min="1" oninput="calcProfit()"></div><div class="calc-field"><label class="calc-label">Selling Price (₹)</label><input class="calc-input" type="number" id="prSell" value="750" min="1" oninput="calcProfit()"></div></div><button class="calc-btn" onclick="calcProfit()">Calculate Profit</button><div class="calc-result" id="profitResult"><div class="cr-row"><span class="cr-label">Profit Amount</span><span class="cr-value green" id="prAmt">—</span></div><div class="cr-row"><span class="cr-label">Profit Margin</span><span class="cr-value big" id="prMargin">—</span></div><div class="cr-row"><span class="cr-label">Markup %</span><span class="cr-value" id="prMarkup">—</span></div></div></div>`,
+currency:`<div class="calc-box"><div class="calc-title">💱 Currency Converter</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Amount</label><input class="calc-input" type="number" id="curAmt" value="100" min="0.01" step="0.01" oninput="calcCurrency()"></div><div class="calc-field"><label class="calc-label">From</label><select class="calc-input" id="curFrom" onchange="calcCurrency()"><option value="INR" selected>🇮🇳 INR</option><option value="USD">🇺🇸 USD</option><option value="EUR">🇪🇺 EUR</option><option value="GBP">🇬🇧 GBP</option><option value="JPY">🇯🇵 JPY</option><option value="AED">🇦🇪 AED</option><option value="SGD">🇸🇬 SGD</option><option value="CAD">🇨🇦 CAD</option></select></div><div class="calc-field"><label class="calc-label">To</label><select class="calc-input" id="curTo" onchange="calcCurrency()"><option value="USD" selected>🇺🇸 USD</option><option value="INR">🇮🇳 INR</option><option value="EUR">🇪🇺 EUR</option><option value="GBP">🇬🇧 GBP</option><option value="JPY">🇯🇵 JPY</option><option value="AED">🇦🇪 AED</option><option value="SGD">🇸🇬 SGD</option><option value="CAD">🇨🇦 CAD</option></select></div></div><button class="calc-btn" onclick="calcCurrency()">Convert</button><div class="calc-result" id="curResult"><div class="cr-row"><span class="cr-label">Converted Amount</span><span class="cr-value big" id="curOut">—</span></div><div class="cr-row"><span class="cr-label">Exchange Rate</span><span class="cr-value" id="curRate">—</span></div><div style="font-size:.65rem;color:#7a7670;margin-top:.5rem;font-family:var(--mono)">⚠ Approximate rates. For live rates visit xe.com</div></div></div>`,
+timezone:`<div class="calc-box"><div class="calc-title">⏰ Time Zone Converter</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">Date & Time</label><input class="calc-input" type="datetime-local" id="tzTime" oninput="calcTZ()"></div><div class="calc-field"><label class="calc-label">From</label><select class="calc-input" id="tzFrom" onchange="calcTZ()"><option value="Asia/Kolkata">🇮🇳 India (IST)</option><option value="America/New_York">🇺🇸 New York</option><option value="America/Los_Angeles">🇺🇸 Los Angeles</option><option value="Europe/London">🇬🇧 London</option><option value="Europe/Paris">🇫🇷 Paris</option><option value="Asia/Dubai">🇦🇪 Dubai</option><option value="Asia/Tokyo">🇯🇵 Tokyo</option><option value="Asia/Singapore">🇸🇬 Singapore</option><option value="Australia/Sydney">🇦🇺 Sydney</option></select></div><div class="calc-field"><label class="calc-label">To</label><select class="calc-input" id="tzTo" onchange="calcTZ()"><option value="America/New_York" selected>🇺🇸 New York</option><option value="Asia/Kolkata">🇮🇳 India (IST)</option><option value="America/Los_Angeles">🇺🇸 Los Angeles</option><option value="Europe/London">🇬🇧 London</option><option value="Europe/Paris">🇫🇷 Paris</option><option value="Asia/Dubai">🇦🇪 Dubai</option><option value="Asia/Tokyo">🇯🇵 Tokyo</option><option value="Asia/Singapore">🇸🇬 Singapore</option><option value="Australia/Sydney">🇦🇺 Sydney</option></select></div></div><button class="calc-btn" onclick="calcTZ()">Convert Time</button><div class="calc-result" id="tzResult"><div class="cr-row"><span class="cr-label">Converted Time</span><span class="cr-value big" id="tzOut">—</span></div><div class="cr-row"><span class="cr-label">Date</span><span class="cr-value" id="tzDate">—</span></div></div></div>`,
+password:`<div class="calc-box"><div class="calc-title">🔑 Password Generator</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label" style="display:flex;justify-content:space-between">Length <span class="calc-range-val" id="pwLenLbl">16 chars</span></label><input class="calc-input" type="range" id="pwLen" value="16" min="6" max="64" oninput="document.getElementById('pwLenLbl').textContent=this.value+' chars';genPass()"></div><div class="calc-field"><label class="calc-label" style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="pwUpper" checked onchange="genPass()"> Uppercase (A-Z)</label></div><div class="calc-field"><label class="calc-label" style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="pwLower" checked onchange="genPass()"> Lowercase (a-z)</label></div><div class="calc-field"><label class="calc-label" style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="pwNum" checked onchange="genPass()"> Numbers (0-9)</label></div><div class="calc-field"><label class="calc-label" style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="pwSym" onchange="genPass()"> Symbols (!@#$)</label></div></div><button class="calc-btn" onclick="genPass()">🔄 Regenerate</button><div class="calc-result show" id="pwResult"><div class="cr-row"><span class="cr-label">Generated Password</span></div><div style="font-family:var(--mono);font-size:.9rem;color:#f0ede6;word-break:break-all;padding:.5rem 0;letter-spacing:.05em" id="pwOut">—</div><div class="cr-row" style="margin-top:.5rem"><span class="cr-label">Strength</span><span class="cr-value" id="pwStrength">—</span></div><button onclick="navigator.clipboard.writeText(document.getElementById('pwOut').textContent).then(()=>showToast('🔑 Copied!'))" style="margin-top:.7rem;padding:6px 14px;border-radius:50px;background:rgba(255,255,255,.1);color:#f0ede6;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-family:var(--sans);font-size:.72rem">📋 Copy Password</button></div></div>`,
+wordcount:`<div class="calc-box"><div class="calc-title">📝 Word Counter</div><div class="calc-field" style="margin-bottom:.8rem"><label class="calc-label">Paste your text below</label><textarea id="wcText" style="width:100%;height:110px;padding:10px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-family:var(--sans);font-size:.85rem;color:var(--ink);resize:vertical;outline:none;margin-top:.3rem;transition:border-color .2s" placeholder="Type or paste text here…" oninput="calcWC()"></textarea></div><button class="calc-btn" onclick="calcWC()">Analyze Text</button><div class="calc-result" id="wcResult"><div class="cr-row"><span class="cr-label">Words</span><span class="cr-value big" id="wcWords">—</span></div><div class="cr-row"><span class="cr-label">Characters (with spaces)</span><span class="cr-value" id="wcChars">—</span></div><div class="cr-row"><span class="cr-label">Characters (no spaces)</span><span class="cr-value" id="wcCharsNS">—</span></div><div class="cr-row"><span class="cr-label">Sentences</span><span class="cr-value" id="wcSents">—</span></div><div class="cr-row"><span class="cr-label">Reading Time</span><span class="cr-value green" id="wcRead">—</span></div></div></div>`,
+ip:`<div class="calc-box"><div class="calc-title">🌐 IP Address Lookup</div><div class="calc-grid"><div class="calc-field full"><label class="calc-label">IP Address (blank = your IP)</label><input class="calc-input" type="text" id="ipInput" placeholder="e.g. 8.8.8.8"></div></div><button class="calc-btn" onclick="fetchIP()">Lookup IP</button><div class="calc-result" id="ipResult"><div class="cr-row"><span class="cr-label">IP Address</span><span class="cr-value big" id="ipAddr">—</span></div><div class="cr-row"><span class="cr-label">Country</span><span class="cr-value" id="ipCountry">—</span></div><div class="cr-row"><span class="cr-label">City / Region</span><span class="cr-value" id="ipCity">—</span></div><div class="cr-row"><span class="cr-label">ISP</span><span class="cr-value" id="ipISP">—</span></div><div class="cr-row"><span class="cr-label">Timezone</span><span class="cr-value" id="ipTZ">—</span></div></div></div>`,
+color:`<div class="calc-box"><div class="calc-title">🎨 Color Picker & Converter</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Pick Color</label><input type="color" id="colorPick" value="#e8420a" style="width:100%;height:44px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;background:none" oninput="initColor()"></div><div class="calc-field"><label class="calc-label">HEX Value</label><input class="calc-input" type="text" id="colorHex" value="#e8420a" placeholder="#ff0000" oninput="hexToAll()"></div></div><button class="calc-btn" onclick="initColor()">Convert Color</button><div class="calc-result show" id="colorResult"><div class="cr-row"><span class="cr-label">HEX</span><span class="cr-value big" id="colorHexOut">—</span></div><div class="cr-row"><span class="cr-label">RGB</span><span class="cr-value" id="colorRGB">—</span></div><div class="cr-row"><span class="cr-label">HSL</span><span class="cr-value" id="colorHSL">—</span></div><div style="margin-top:.8rem;height:40px;border-radius:10px;transition:background .3s" id="colorPreview"></div></div></div>`,
+irrigation:`<div class="calc-box"><div class="calc-title">💧 Irrigation Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Area (Acres)</label><input class="calc-input" type="number" id="irArea" value="1" min="0.1" step="0.1" oninput="calcIrrigation()"></div><div class="calc-field"><label class="calc-label">Crop Type</label><select class="calc-input" id="irCrop" onchange="calcIrrigation()"><option value="2.5">Wheat</option><option value="4">Rice</option><option value="1.8">Maize</option><option value="3.5" selected>Sugarcane</option><option value="1.2">Vegetables</option><option value="2">Cotton</option><option value="1.5">Pulses</option></select></div><div class="calc-field"><label class="calc-label">Season</label><select class="calc-input" id="irSeason" onchange="calcIrrigation()"><option value="1">Winter (Rabi)</option><option value="1.3" selected>Summer (Kharif)</option><option value="0.8">Spring</option></select></div><div class="calc-field"><label class="calc-label">Soil Type</label><select class="calc-input" id="irSoil" onchange="calcIrrigation()"><option value="0.9">Sandy</option><option value="1" selected>Loamy</option><option value="1.2">Clay</option></select></div></div><button class="calc-btn" onclick="calcIrrigation()">Calculate Water Need</button><div class="calc-result" id="irResult"><div class="cr-row"><span class="cr-label">Daily Water Need</span><span class="cr-value big" id="irDaily">—</span></div><div class="cr-row"><span class="cr-label">Weekly Requirement</span><span class="cr-value" id="irWeekly">—</span></div><div class="cr-row"><span class="cr-label">Irrigation Frequency</span><span class="cr-value green" id="irFreq">—</span></div></div></div>`,
+seedrate:`<div class="calc-box"><div class="calc-title">🌱 Seed Rate Calculator</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Area (Acres)</label><input class="calc-input" type="number" id="srArea" value="1" min="0.1" step="0.1" oninput="calcSeed()"></div><div class="calc-field"><label class="calc-label">Crop</label><select class="calc-input" id="srCrop" onchange="calcSeed()"><option value="100">Wheat (100 kg/ac)</option><option value="20">Rice (20 kg/ac)</option><option value="8">Maize (8 kg/ac)</option><option value="5">Soybean (5 kg/ac)</option><option value="3">Cotton (3 kg/ac)</option><option value="12">Mustard (12 kg/ac)</option><option value="2">Sunflower (2 kg/ac)</option></select></div><div class="calc-field full"><label class="calc-label">Germination (%)</label><input class="calc-input" type="number" id="srGerm" value="85" min="50" max="100" oninput="calcSeed()"></div></div><button class="calc-btn" onclick="calcSeed()">Calculate Seeds</button><div class="calc-result" id="srResult"><div class="cr-row"><span class="cr-label">Seeds Required</span><span class="cr-value big" id="srKg">—</span></div><div class="cr-row"><span class="cr-label">Adjusted for Germination</span><span class="cr-value green" id="srAdj">—</span></div></div></div>`,
+fertilizer:`<div class="calc-box"><div class="calc-title">🧪 Fertilizer Recommendation</div><div class="calc-grid"><div class="calc-field"><label class="calc-label">Area (Acres)</label><input class="calc-input" type="number" id="frArea" value="1" min="0.1" step="0.1" oninput="calcFert()"></div><div class="calc-field"><label class="calc-label">Crop Type</label><select class="calc-input" id="frCrop" onchange="calcFert()"><option value="wheat">Wheat</option><option value="rice" selected>Rice</option><option value="maize">Maize</option><option value="cotton">Cotton</option><option value="veg">Vegetables</option><option value="sugarcane">Sugarcane</option></select></div><div class="calc-field"><label class="calc-label">Soil Health</label><select class="calc-input" id="frSoil" onchange="calcFert()"><option value="0.8">Poor</option><option value="1" selected>Average</option><option value="1.2">Good</option></select></div></div><button class="calc-btn" onclick="calcFert()">Get Recommendation</button><div class="calc-result" id="frResult"><div class="cr-row"><span class="cr-label">Urea (Nitrogen)</span><span class="cr-value big" id="frUrea">—</span></div><div class="cr-row"><span class="cr-label">DAP (Phosphorus)</span><span class="cr-value" id="frDAP">—</span></div><div class="cr-row"><span class="cr-label">MOP (Potassium)</span><span class="cr-value green" id="frMOP">—</span></div></div></div>`,
+};
+return C[calc]||'';
+}
+// LIKE / SAVE
+function toggleLike(){liked=!liked;likeCount+=liked?1:-1;document.getElementById('eLkC').textContent=likeCount;updateLikeUI();showToast(liked?'❤️ Liked!':'🤍 Like removed')}
+function updateLikeUI(){document.getElementById('eLk').classList.toggle('liked',liked)}
+function toggleSave(){saved=!saved;if(saved&&curId!==null&&!bookmarks.includes(curId))bookmarks.push(curId);else bookmarks=bookmarks.filter(b=>b!==curId);updateSaveUI();showToast(saved?'📌 Saved!':'🗑 Removed from saved')}
+function updateSaveUI(){document.getElementById('eSv').classList.toggle('saved',saved);document.getElementById('eSvT').textContent=saved?'✓ Saved':'Save'}
+// SHARE
+function toggleShare(){const p=document.getElementById('shPan');p.classList.toggle('open');if(p.classList.contains('open'))p.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function doShare(platform){const url=encodeURIComponent(document.getElementById('spLnk').value);const title=encodeURIComponent(document.getElementById('mTtl').textContent);const links={twitter:`https://twitter.com/intent/tweet?text=${title}&url=${url}`,linkedin:`https://www.linkedin.com/sharing/share-offsite/?url=${url}`,whatsapp:`https://wa.me/?text=${title}%20${url}`};window.open(links[platform],'_blank');showToast('Opening '+platform+'…')}
+function copyLink(){navigator.clipboard.writeText(document.getElementById('spLnk').value).then(()=>showToast('🔗 Link copied!')).catch(()=>showToast('🔗 Copied!'))}
+// COMMENTS
+function renderCmts(){const all=[...CMTS,...xCmts];document.getElementById('cmtCN').textContent=all.length;document.getElementById('eCmC').textContent=all.length;document.getElementById('cmtLi').innerHTML=all.map(c=>`<div class="cmt-it"><div class="ca" style="background:${c.bg}">${c.n.charAt(0)}</div><div><span class="cb-n">${c.n}</span><span class="cb-ti">${c.t}</span><div class="cb-tx">${c.tx}</div><div class="cb-ac"><button class="cb-a" onclick="this.textContent='❤️ '+(parseInt(this.textContent.replace(/\D/g,''))||0+1)">♡ ${Math.floor(Math.random()*15)+1}</button><button class="cb-a" onclick="document.getElementById('cmtIn').focus()">↩ Reply</button></div></div></div>`).join('')}
+function submitCmt(){const inp=document.getElementById('cmtIn');const v=inp.value.trim();if(!v)return;xCmts.unshift({n:'You',t:'just now',tx:v,bg:'#e8420a'});inp.value='';renderCmts();showToast('💬 Comment published!')}
+// NEWSLETTER
+function subscribe(){const inp=document.getElementById('nlEm');const btn=document.querySelector('.btn-sub');if(inp.value&&inp.value.includes('@')){btn.textContent="✓ You're in!";btn.style.background='#2d6a4f';inp.value='';showToast('🎉 Welcome to Signal!');setTimeout(()=>{btn.textContent='Subscribe →';btn.style.background=''},3000)}else{inp.style.borderColor='var(--accent)';inp.style.boxShadow='0 0 0 3px rgba(232,66,10,.2)';inp.focus();setTimeout(()=>{inp.style.borderColor='';inp.style.boxShadow=''},1800)}}
+// READ STATS
+function updateReadSt(){const el=document.getElementById('readSt');if(!readCount){el.textContent='Start reading to track progress.';return}el.innerHTML=`<div style="margin-bottom:.5rem">📚 <strong>${readCount}</strong> article${readCount>1?'s':''} read today</div><div style="background:var(--bg2);border-radius:50px;height:5px;overflow:hidden"><div style="width:${Math.min(readCount*20,100)}%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:50px;transition:width .5s"></div></div><div style="font-size:.67rem;color:var(--ink3);margin-top:.4rem">${readCount>=5?'🏆 Daily goal reached!':5-readCount+' more to reach daily goal'}</div>`}
+// BOOKMARKS
+document.getElementById('bmkBtn').onclick=()=>showToast(`📌 ${bookmarks.length} bookmark${bookmarks.length!==1?'s':''} saved`);
+// TOAST
+let tT;function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800)}
+// LIVE COUNT
+setInterval(()=>{const el=document.getElementById('liveC');if(el)el.textContent='Live — '+(3241+Math.floor(Math.random()*40)-20).toLocaleString()+' readers online'},4000);
+// KEYBOARD
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();si.focus();si.select();showToast('⌘K — Search')}});
+// ── ALL CALCULATORS ──────────────────────────────────────────────────
+function fmtINR(n){if(n>=10000000)return '₹'+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return '₹'+(n/100000).toFixed(2)+' L';return '₹'+Math.round(n).toLocaleString('en-IN')}
+function g(id){return document.getElementById(id)}
+function sv(id,v){const e=g(id);if(e)e.textContent=v}
+// SIP
+function calcSIP(){const amt=parseFloat(g('sipAmt').value)||0,rate=parseFloat(g('sipRate').value)||0,yrs=parseInt(g('sipYrs').value)||1,n=yrs*12,r=rate/100/12,invested=amt*n,total=r>0?amt*((Math.pow(1+r,n)-1)/r)*(1+r):invested;sv('sipInvested',fmtINR(invested));sv('sipReturns',fmtINR(total-invested));sv('sipTotal',fmtINR(total));const el=g('sipResult');if(el)el.classList.add('show')}
+// EMI
+function calcEMI(){const P=parseFloat(g('emiAmt').value)||0,rate=parseFloat(g('emiRate').value)||0,yrs=parseInt(g('emiYrs').value)||1,n=yrs*12,r=rate/100/12,emi=r>0?P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):P/n,total=emi*n;sv('emiMonthly',fmtINR(emi));sv('emiInterest',fmtINR(total-P));sv('emiTotal',fmtINR(total));const el=g('emiResult');if(el)el.classList.add('show')}
+// COMPOUND
+function calcCI(){const P=parseFloat(g('ciPrincipal').value)||0,rate=parseFloat(g('ciRate').value)||0,yrs=parseInt(g('ciYrs').value)||1,n=parseInt(g('ciFreq').value)||1,total=P*Math.pow(1+rate/100/n,n*yrs);sv('ciPrin',fmtINR(P));sv('ciEarned',fmtINR(total-P));sv('ciTotal',fmtINR(total));const el=g('ciResult');if(el)el.classList.add('show')}
+// GST
+function calcGST(){const amt=parseFloat(g('gstAmt').value)||0,rate=parseFloat(g('gstRate').value)||18,type=g('gstType').value;let base,gstAmt;if(type==='excl'){base=amt;gstAmt=amt*rate/100}else{base=amt/(1+rate/100);gstAmt=amt-base}const total=base+gstAmt;sv('gstBase',fmtINR(base));sv('gstAmount',fmtINR(gstAmt));sv('gstTotal',fmtINR(total));sv('gstSplit',fmtINR(gstAmt/2)+' each');const el=g('gstResult');if(el)el.classList.add('show')}
+// FD
+function calcFD(){const P=parseFloat(g('fdAmt').value)||0,rate=parseFloat(g('fdRate').value)||0,yrs=parseInt(g('fdYrs').value)||1,total=P*Math.pow(1+rate/100/4,4*yrs);sv('fdPrin',fmtINR(P));sv('fdInt',fmtINR(total-P));sv('fdTotal',fmtINR(total));const el=g('fdResult');if(el)el.classList.add('show')}
+// BMI
+function calcBMI(){const wt=parseFloat(g('bmiWt').value)||0,ht=parseFloat(g('bmiHt').value)/100||0;if(!wt||!ht)return;const bmi=wt/(ht*ht),ideal1=(18.5*ht*ht).toFixed(1),ideal2=(24.9*ht*ht).toFixed(1);let cat,clr;if(bmi<18.5){cat='⚠️ Underweight';clr='#f5c480'}else if(bmi<25){cat='✅ Normal Weight';clr='#6ddfa0'}else if(bmi<30){cat='⚠️ Overweight';clr='#f5c480'}else{cat='🔴 Obese';clr='#f5a0a0'}sv('bmiVal',bmi.toFixed(1));const catEl=g('bmiCat');if(catEl){catEl.textContent=cat;catEl.style.color=clr}sv('bmiIdeal',ideal1+'–'+ideal2+' kg');const el=g('bmiResult');if(el)el.classList.add('show')}
+// AGE
+function calcAge(){const dob=g('ageDOB').value;if(!dob)return;const d=new Date(dob),now=new Date();let yrs=now.getFullYear()-d.getFullYear(),mo=now.getMonth()-d.getMonth(),days=now.getDate()-d.getDate();if(days<0){mo--;days+=new Date(now.getFullYear(),now.getMonth(),0).getDate()}if(mo<0){yrs--;mo+=12}const totalDays=Math.floor((now-d)/86400000),totalMo=yrs*12+mo;const nextBd=new Date(now.getFullYear(),d.getMonth(),d.getDate());if(nextBd<=now)nextBd.setFullYear(now.getFullYear()+1);const daysLeft=Math.floor((nextBd-now)/86400000);sv('ageYrs',yrs+' yrs '+mo+' mo '+days+' days');sv('ageMo',totalMo.toLocaleString()+' months');sv('ageDy',totalDays.toLocaleString()+' days');sv('ageBd',daysLeft+' days');const el=g('ageResult');if(el)el.classList.add('show')}
+// HEART RATE
+function calcHR(){const age=parseInt(g('hrAge').value)||30,max=220-age;sv('hrMax',max+' bpm');sv('hrFat',Math.round(max*.5)+' – '+Math.round(max*.7)+' bpm');sv('hrCardio',Math.round(max*.7)+' – '+Math.round(max*.85)+' bpm');sv('hrPeak',Math.round(max*.85)+' – '+max+' bpm');const el=g('hrResult');if(el)el.classList.add('show')}
+// WATER
+function calcWater(){const wt=parseFloat(g('h2oWt').value)||70,act=parseFloat(g('h2oAct').value)||1.4,litres=(wt*0.033*act).toFixed(1),glasses=Math.ceil(litres/0.25);sv('waterLtr',litres+' Litres');sv('waterGlass',glasses+' glasses');const el=g('waterResult');if(el)el.classList.add('show')}
+// TIP
+function calcTip(){const bill=parseFloat(g('tipBill').value)||0,pct=parseFloat(g('tipPct').value)||0,split=parseInt(g('tipSplit').value)||1,tip=bill*pct/100,total=bill+tip;sv('tipAmt',fmtINR(tip));sv('tipTotal',fmtINR(total));sv('tipPer',fmtINR(total/split));const el=g('tipResult');if(el)el.classList.add('show')}
+// PROFIT
+function calcProfit(){const cost=parseFloat(g('prCost').value)||0,sell=parseFloat(g('prSell').value)||0,profit=sell-cost,margin=sell>0?(profit/sell*100).toFixed(1):0,markup=cost>0?(profit/cost*100).toFixed(1):0;sv('prAmt',fmtINR(profit));sv('prMargin',margin+'%');sv('prMarkup',markup+'%');const el=g('profitResult');if(el)el.classList.add('show')}
+// CURRENCY (approximate fixed rates)
+const FX={USD:1,INR:83.5,EUR:0.92,GBP:0.79,JPY:149.5,AED:3.67,SGD:1.34,CAD:1.36};
+function calcCurrency(){const amt=parseFloat(g('curAmt').value)||0,from=g('curFrom').value,to=g('curTo').value;const inUSD=amt/FX[from],result=inUSD*FX[to],rate=(FX[to]/FX[from]).toFixed(4);sv('curOut',result.toFixed(2)+' '+to);sv('curRate','1 '+from+' = '+rate+' '+to);const el=g('curResult');if(el)el.classList.add('show')}
+// TIMEZONE
+function calcTZ(){const inp=g('tzTime').value;if(!inp)return;const from=g('tzFrom').value,to=g('tzTo').value;try{const dt=new Date(inp),opts={timeZone:to,hour:'2-digit',minute:'2-digit',hour12:true},dopts={timeZone:to,weekday:'short',year:'numeric',month:'short',day:'numeric'};sv('tzOut',dt.toLocaleTimeString('en-US',opts));sv('tzDate',dt.toLocaleDateString('en-US',dopts));const el=g('tzResult');if(el)el.classList.add('show')}catch(e){sv('tzOut','Invalid input')}}
+// PASSWORD
+function genPass(){const len=parseInt(g('pwLen').value)||16,U=g('pwUpper').checked,L=g('pwLower').checked,N=g('pwNum').checked,S=g('pwSym').checked;let chars='';if(U)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(L)chars+='abcdefghijklmnopqrstuvwxyz';if(N)chars+='0123456789';if(S)chars+='!@#$%^&*()_+-=[]{}|;:,.<>?';if(!chars)chars='abcdefghijklmnopqrstuvwxyz';let pw='';for(let i=0;i<len;i++)pw+=chars[Math.floor(Math.random()*chars.length)];sv('pwOut',pw);let strength='';const score=[U,L,N,S].filter(Boolean).length+(len>=12?1:0)+(len>=20?1:0);if(score<=2)strength='🔴 Weak';else if(score<=4)strength='🟡 Moderate';else strength='🟢 Strong';sv('pwStrength',strength)}
+// WORD COUNT
+function calcWC(){const txt=g('wcText')?.value||'';if(!txt.trim()){return}const words=txt.trim().split(/\s+/).filter(w=>w).length,chars=txt.length,charsNS=txt.replace(/\s/g,'').length,sents=txt.split(/[.!?]+/).filter(s=>s.trim()).length,paras=txt.split(/\n\n+/).filter(p=>p.trim()).length||1,rt=Math.ceil(words/200);sv('wcWords',words.toLocaleString());sv('wcChars',chars.toLocaleString());sv('wcCharsNS',charsNS.toLocaleString());sv('wcSents',sents.toLocaleString());sv('wcRead',rt+' min read');const el=g('wcResult');if(el)el.classList.add('show')}
+// IP LOOKUP
+function fetchIP(){const ip=g('ipInput')?.value.trim()||'';const url=ip?`https://ipapi.co/${ip}/json/`:'https://ipapi.co/json/';sv('ipAddr','Looking up…');fetch(url).then(r=>r.json()).then(d=>{sv('ipAddr',d.ip||'—');sv('ipCountry',(d.country_flag_emoji||'')+' '+(d.country_name||'—'));sv('ipCity',(d.city||'—')+', '+(d.region||'—'));sv('ipISP',d.org||'—');sv('ipTZ',d.timezone||'—');const el=g('ipResult');if(el)el.classList.add('show')}).catch(()=>{sv('ipAddr','Error — try again')})}
+// COLOR
+function hexToRGB(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return{r,g,b}}
+function rgbToHSL(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2;if(max===min){h=s=0}else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;default:h=((r-g)/d+4)/6}}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)}}
+function initColor(){const pick=g('colorPick');if(!pick)return;const hex=pick.value;if(g('colorHex'))g('colorHex').value=hex;updateColorResult(hex)}
+function hexToAll(){const hex=g('colorHex')?.value||'';if(/^#[0-9a-fA-F]{6}$/.test(hex)){if(g('colorPick'))g('colorPick').value=hex;updateColorResult(hex)}}
+function updateColorResult(hex){try{const{r,g:gr,b}=hexToRGB(hex),{h,s,l}=rgbToHSL(r,gr,b);sv('colorHexOut',hex.toUpperCase());sv('colorRGB',`rgb(${r}, ${gr}, ${b})`);sv('colorHSL',`hsl(${h}, ${s}%, ${l}%)`);const prev=document.getElementById('colorPreview');if(prev)prev.style.background=hex;const el=g('colorResult');if(el)el.classList.add('show')}catch(e){}}
+// IRRIGATION
+function calcIrrigation(){const area=parseFloat(g('irArea').value)||1,crop=parseFloat(g('irCrop').value)||3.5,season=parseFloat(g('irSeason').value)||1.3,soil=parseFloat(g('irSoil').value)||1,daily=area*crop*season*soil*1000;sv('irDaily',Math.round(daily).toLocaleString()+' Litres');sv('irWeekly',Math.round(daily*7/1000).toLocaleString()+' kL');const days=Math.max(1,Math.round(30/(daily/1000/area)));sv('irFreq','Every '+days+' day'+(days>1?'s':''));const el=g('irResult');if(el)el.classList.add('show')}
+// SEED RATE
+function calcSeed(){const area=parseFloat(g('srArea').value)||1,rate=parseFloat(g('srCrop').value)||20,germ=parseFloat(g('srGerm').value)||85,basic=area*rate,adj=basic/(germ/100);sv('srKg',basic.toFixed(1)+' kg');sv('srAdj',adj.toFixed(1)+' kg');const el=g('srResult');if(el)el.classList.add('show')}
+// FERTILIZER
+function calcFert(){const area=parseFloat(g('frArea').value)||1,crop=g('frCrop').value,soil=parseFloat(g('frSoil').value)||1;const base={wheat:{u:50,d:25,m:20},rice:{u:60,d:30,m:20},maize:{u:55,d:28,m:20},cotton:{u:65,d:35,m:30},veg:{u:40,d:20,m:15},sugarcane:{u:75,d:40,m:40}};const b=base[crop]||base.rice;sv('frUrea',Math.round(area*b.u/soil)+' kg');sv('frDAP',Math.round(area*b.d/soil)+' kg');sv('frMOP',Math.round(area*b.m/soil)+' kg');const el=g('frResult');if(el)el.classList.add('show')}
+// SET DEFAULT DATE FOR AGE/TZ CALCS
+document.addEventListener('DOMContentLoaded',()=>{});
 </script>
-
 </body>
 </html>
