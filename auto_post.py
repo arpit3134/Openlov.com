@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 api_key = os.getenv("GEMINI_API_KEY")
-# Using Stable v1 API instead of beta
+# FULL Model Path is required for the v1 stable API
 url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
 
 prompt = {
@@ -28,7 +28,7 @@ try:
             f.write(article_text)
         print(f"✅ BINGO! Article saved: {filename}")
     else:
-        print("❌ Error from Gemini API:")
+        print("❌ Error from Gemini API (Detailed):")
         print(json.dumps(data, indent=2))
 except Exception as e:
     print(f"❌ Python Error: {e}")
