@@ -4,7 +4,8 @@ import json
 from datetime import datetime
 
 api_key = os.getenv("GEMINI_API_KEY")
-url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+# Model name fixed for v1beta
+url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
 
 prompt = {"contents": [{"parts":[{"text": "Write a unique 300-word Hindi article about cricket trends. Use <h2> and <p> tags."}]}]}
 
