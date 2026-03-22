@@ -3,73 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Openlov - AI Tech News & Live Updates</title>
+    <title>OpenLov — Cricket News</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
-        nav { background: var(--card); padding: 1rem; text-align: center; border-bottom: 2px solid var(--primary); font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        .score-box { background: linear-gradient(45deg, #1e293b, #334155); border: 1px solid #fbbf24; padding: 20px; border-radius: 15px; margin-bottom: 30px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        h2 { border-left: 4px solid var(--primary); padding-left: 10px; margin-top: 30px; }
-        #articles-list { display: grid; gap: 15px; margin-top: 20px; }
-        .article-card { background: var(--card); padding: 15px; border-radius: 10px; text-decoration: none; color: white; display: block; transition: 0.3s; border: 1px solid #334155; }
-        .article-card:hover { transform: translateY(-3px); border-color: var(--primary); background: #2d3748; }
-        footer { text-align: center; padding: 40px; color: #64748b; font-size: 0.8rem; }
+        /* Aapki file ka original style yahan maintain rahega */
+        :root { --bg:#f9f8f5; --ink:#1a1814; --accent:#e8420a; --sans:'DM Sans',sans-serif; --serif:'Playfair Display',serif; }
+        body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0; padding: 0; }
+        header { padding: 40px 20px; border-bottom: 1px solid #e0ddd6; text-align: center; }
+        .logo { font-family: var(--serif); font-size: 48px; font-weight: 900; text-decoration: none; color: var(--ink); letter-spacing: -2px; }
+        .nav-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+        .nav-links a { text-decoration: none; color: var(--ink); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background: #fff; border: 1px solid #e0ddd6; padding: 25px; transition: transform 0.3s ease; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .tag { color: var(--accent); text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; display: block; }
+        .card-title { font-family: var(--serif); font-size: 24px; line-height: 1.2; margin-bottom: 15px; font-weight: 700; text-transform: capitalize; }
+        .card-meta { font-size: 12px; color: #7a7670; font-weight: 500; }
+        footer { text-align: center; padding: 60px 20px; border-top: 1px solid #e0ddd6; font-size: 12px; color: #7a7670; }
     </style>
 </head>
 <body>
 
-    <nav>Openlov.com</nav>
-
-    <div class="container">
-        <div class="score-box">
-            <h3 style="color:#fbbf24; margin-top:0;">🏏 LIVE MATCH UPDATE</h3>
-            <div id="score">Updating match status...</div>
-        </div>
-
-        <h2>Latest AI Generated News</h2>
-        <div id="articles-list">
-            <p id="loading">Scanning for new posts...</p>
-        </div>
+<header>
+    <a href="/" class="logo">OpenLov</a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/pages/privacy.html">Privacy</a>
+        <a href="/pages/contact.html">Contact</a>
     </div>
+</header>
 
-    <footer>© 2026 Openlov.com | Powered by Gemini AI</footer>
+<div class="grid-container" id="posts-container">
+    <p style="text-align:center; grid-column: 1/-1;">Loading latest stories...</p>
+</div>
 
-    <script>
-        // Function to automatically list articles from the 'articles' folder
-        async function loadArticles() {
-            const listElement = document.getElementById('articles-list');
-            const repoOwner = "arpit3134"; 
-            const repoName = "Openlov.com";
-            
-            try {
-                // GitHub API se articles folder ki files mangwana
-                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/articles`);
-                const files = await response.json();
-                
-                if (files.length > 0) {
-                    listElement.innerHTML = ""; // Loading text hatao
-                    // Files ko ulta karna (Latest first)
-                    files.reverse().forEach(file => {
-                        if (file.name.endsWith('.html')) {
-                            const card = document.createElement('a');
-                            card.className = 'article-card';
-                            card.href = file.path;
-                            // File name se sundar title banana (e.g. post-20240322.html -> Post 2024-03-22)
-                            const title = file.name.replace('post-', 'Article: ').replace('.html', '');
-                            card.innerHTML = `<strong>${title}</strong><br><small style="color:#38bdf8">Click to read full story →</small>`;
-                            listElement.appendChild(card);
-                        }
-                    });
-                } else {
-                    listElement.innerHTML = "<p>No articles posted yet. Robot is working...</p>";
+<footer>
+    © 2026 OPENLOV — THE SIGNAL FOR WHAT'S NEXT
+</footer>
+
+<script>
+    async function loadPosts() {
+        try {
+            const res = await fetch('https://api.github.com/repos/arpit3134/Openlov.com/contents/articles');
+            const files = await res.json();
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            files.reverse().forEach(file => {
+                if(file.name.endsWith('.html')) {
+                    // Title formatting
+                    const rawTitle = file.name.replace('.html', '').split('-').slice(1).join(' ');
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.onclick = () => window.location.href = 'articles/' + file.name;
+                    card.innerHTML = `
+                        <div>
+                            <span class="tag">Cricket News</span>
+                            <h2 class="card-title">${rawTitle}</h2>
+                        </div>
+                        <div class="card-meta">By AI Editor • Mar 2026</div>
+                    `;
+                    container.appendChild(card);
                 }
-            } catch (error) {
-                listElement.innerHTML = "<p>Starting up... First article will appear soon!</p>";
-            }
+            });
+        } catch(e) {
+            document.getElementById('posts-container').innerHTML = '<p>Failed to load articles.</p>';
         }
+    }
+    loadPosts();
+</script>
 
-        loadArticles();
-    </script>
 </body>
 </html>
